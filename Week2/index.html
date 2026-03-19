@@ -1,41 +1,103 @@
-<!-- HTML is made up of elements -->
+<!-- 
+ 
+AI DISCLOSURE ON THIS ASSIGNMENT:
+After completing this website manually, based on class examples, I asked ChatGPT to generate to help me adjust my code.
+
+PROMPT: How do I center the YouTube video on the page?
+CODE FROM OUTPUT: <div style="text-align: center;"> ... </div>
+
+PROMPT: How do I add spacing to my unordered list and don't show the bullets? 
+CODE FROM OUTPUT: 
+<ul style="list-style-type: none; padding: 0; margin: 20px 0;">
+    <li style="margin-bottom: 15px;">
+        ...
+    </li>
+    <li style="margin-bottom: 15px;">
+        ...
+    </li>
+</ul>
+
+NOTE: I also had a conversation with ChatGPT about meeting the parent/child class requirements of the assignment and reorganized my code to reflect that conversation.
+
+REFERENCES:
+ASU COLOR PALETTE: https://brandguide.asu.edu/brand-elements/design/color
+JASON BRONOWITZ - ASU PROFILE: https://search.asu.edu/profile/1056872
+PROMOTIONAL COURSE VIDEO: Production by thinkfour
+
+-->
+
 <!DOCTYPE html>
 <html>
-
-
-<!-- ELEMENTS are just boxes that we place content in -->
-<!-- ELEMENTS are made up of tags and attributes -->
-<!-- TAGS look like <sometag> </sometag> -->
-
 <head>
-    <!-- HEAD element provides metadata -->
-    <title>
-        My first page!
-    </title>
+    <title>Jason Bronowitz</title>
 </head>
-
 <body>
-    <h1>Hello, world</h1>
+    <p style="background-color: #8C1D40; color: white; font-size: 38px; text-align: center;">
+        <b><br><br>Jason Bronowitz</b>
+    </p>
+
+    <p style="color: #8C1D40; font-size: 24px; text-align: center;">
+        <b>Associate Teaching Professor and Associate Director for Academic Excellence</b>
+    </p>
+
+    <p style="color: black; font-size: 20px; text-align: center;">
+        <b>The Polytechnic School</b>
+    </p>
+    <p>
+        Jason Bronowitz has taught entrepreneurship and statistics at Arizona State University since 2007, as chair of entrepreneurship departments at the Ira A. Fulton Schools of Engineering, and previously, the W. P. Carey School of Business. Jason served as the founding director of ASU Online from 2009 to 2012. Jason served as founding faculty director of ASU's Local Entrepreneurs Assistance Program with the JPMorgan Chase Foundation and the ASU Social Innovation Startup Lab with Intel. He has a background in regional economic development and entrepreneurship and has consulted with startups and small businesses in Arizona and New York. His current teaching interests are the future of work, ethics of technology and the intersection of the humanities and engineering. Jason regularly teaches for ASU's Humanities Lab, the School of Sustainable Engineering and the Built Environment, the College of Global Futures, and the W. P. Carey School of Business. Jason is a Senior Global Futures Scientist at the Julie Ann Wrigley Global Futures Laboratory.
+    </p>
+
+    <div style="display: flex; justify-content: center;">
+        <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/riB-Su5-cjk"
+            allowfullscreen>
+        </iframe>
+    </div>
+
     <br>
-    Welcome to my webpage!<br>
+    <h2><b>Spring 2026 Classes:</b></h2>
 
+    <section class="button-group">
+        <p><b>TEM 598/IFT 604:</b> Prompt Engineering Research for Data Analysis</p>
+        <button style="width: 10%;" id="prompting">
+            <h4 style="text-align: center;">
+                <a href="https://links.asu.edu/promptengineering">SYLLABUS</a>
+            </h4>
+        </button>
+        <button style="width: 10%;" id="prompting_schedule">
+            <h4 style="text-align: center;">
+                <a href="https://docs.google.com/spreadsheets/d/1AUuLVlxLGFUI_CM5wrdyPhe-HvPTyp9krlOfDkMK2eg/edit?usp=sharing">SCHEDULE</a>
+            </h4>
+        </button>
+    </section>
 
-    <p style="background-color: beige; font-size: 48px">
+    <section class="button-group">
+        <p><b>TMC 110:</b> Understanding the Enterprise</p>
+        <button style="width: 10%;" id="enterprise">
+            <h4 style="text-align: center;">
+                <a href="https://docs.google.com/document/d/1WwrMRbRCXApA8_aFMw_spDCezPZ7La5LFnPREo8Refo/edit?usp=sharing">SYLLABUS</a>
+            </h4>
+        </button>
 
- -some text on line 1<br>
- -some text on line 2<br>
-    </p>
+        <p><b>FSE/CEE/SOS 181:</b> Technological, Social and Sustainable Systems</p>
+        <button style="width: 10%;" id="sustainability">
+            <h4 style="text-align: center;">
+                <a href="https://docs.google.com/document/d/1Rm01WTrIwF189f8eoli2Nv4zpbQAY_xRugr_bs8QSg4/edit?usp=drive_link">SYLLABUS</a>
+            </h4>
+        </button>
 
-    <p style="font-family: 'Arial'">
-        Hello!
-    </p>
-   
-
-    <!-- style attribute styles an element -->
-
-    <!-- -->
-
-    <div style="background-color: black; color: white; font-family: 'Trebuchet MS'" class="ships-scifi">hello</div>
+        <p><b>OMT 548/TMC 498:</b> Statistical Methods for Research</p>
+        <button style="width: 10%;" id="statistics">
+            <h4 style="text-align: center;">
+                <a href="https://docs.google.com/document/d/1esZ5xWmAqlNVxH6BehM8OzHLwc8plK4nR19pvDUt4Ko/edit?usp=sharing">SYLLABUS</a>
+        </h4>
+    </button>
+    </section>
+<br>
+    <div style="background-color: #00A3E0; color: white; text-align: center; font-size: 20px;" class="goodbye">
+        <b>Have a great day!</b>
+    </div>
 </body>
-
 </html>
