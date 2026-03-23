@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-First Python Course | ASU FSE AI4CI</title>
+<style>
+:root{
+  --bg:#0a0b1a;--card:#12142d;--border:#1e2148;
+  --gpt:#10a37f;--claude:#d97706;--gemini:#4285f4;
+  --gpt-bg:rgba(16,163,127,.08);--claude-bg:rgba(217,119,6,.08);--gemini-bg:rgba(66,133,244,.08);
+  --gpt-border:rgba(16,163,127,.25);--claude-border:rgba(217,119,6,.25);--gemini-border:rgba(66,133,244,.25);
+  --text:#d4d4e0;--muted:#6b6f90;--white:#f0f0f5;--accent:#e94560;
+  --r:#e94560;--t:#7c3aed;--c:#059669;--e:#2563eb;--f:#c026d3;--n:#ea580c;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden;}
+.app{max-width:1200px;margin:0 auto;padding:16px;}
+
+/* ─── Hero ─── */
+.hero{text-align:center;padding:36px 20px 28px;background:linear-gradient(135deg,#0a0b1a 0%,#141638 30%,#1a0f2e 60%,#0f1a2e 100%);border-radius:20px;border:1px solid var(--border);margin-bottom:16px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(16,163,127,.04),transparent,rgba(217,119,6,.04),transparent,rgba(66,133,244,.04),transparent);animation:heroSpin 20s linear infinite;}
+@keyframes heroSpin{to{transform:rotate(360deg)}}
+.hero *{position:relative;}
+.hero h1{font-size:26px;color:var(--white);letter-spacing:-.5px;}
+.hero h1 span{background:linear-gradient(135deg,var(--gpt),var(--claude),var(--gemini));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800;}
+.hero .sub{font-size:12px;color:var(--muted);margin-top:6px;}
+.hero .philosophy{margin-top:14px;font-size:13px;font-style:italic;color:var(--claude);max-width:700px;margin-left:auto;margin-right:auto;padding:10px 16px;border:1px solid var(--claude-border);border-radius:10px;background:var(--claude-bg);}
+.ai-pills{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.ai-pill{padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;}
+.ai-pill.gpt{background:var(--gpt-bg);border:1px solid var(--gpt-border);color:var(--gpt);}
+.ai-pill.claude{background:var(--claude-bg);border:1px solid var(--claude-border);color:var(--claude);}
+.ai-pill.gem{background:var(--gemini-bg);border:1px solid var(--gemini-border);color:var(--gemini);}
+.ai-pill .dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s ease infinite;}
+.ai-pill.gpt .dot{background:var(--gpt);}
+.ai-pill.claude .dot{background:var(--claude);}
+.ai-pill.gem .dot{background:var(--gemini);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+
+/* ─── Layout ─── */
+.layout{display:flex;gap:14px;}
+.sidebar{width:240px;flex-shrink:0;position:sticky;top:14px;align-self:flex-start;max-height:calc(100vh - 28px);overflow-y:auto;}
+.main{flex:1;min-width:0;}
+@media(max-width:800px){.layout{flex-direction:column;}.sidebar{width:100%;position:static;max-height:none;}}
+
+/* ─── Sidebar ─── */
+.mod-list{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;}
+.mod-item{padding:11px 12px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;transition:all .25s;margin:3px 0;display:flex;align-items:center;gap:9px;background:rgba(233,69,96,.12);border:1.5px solid rgba(233,69,96,.25);box-shadow:0 2px 6px rgba(0,0,0,.15);color:#e0e0e0;}
+.mod-item:hover{background:rgba(233,69,96,.25);border-color:rgba(233,69,96,.5);transform:translateX(3px);box-shadow:0 3px 10px rgba(0,0,0,.2);}
+.mod-item.active{background:linear-gradient(135deg,var(--gpt),var(--claude));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(233,69,96,.3);}
+.mod-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;background:var(--border);flex-shrink:0;}
+.mod-item.active .mod-num{background:rgba(255,255,255,.2);}
+.legend{padding:10px;font-size:10px;color:var(--muted);text-align:center;margin-top:8px;border-top:1px solid var(--border);}
+.legend span{margin:0 4px;}
+
+/* ─── Content Cards ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;animation:cardIn .4s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.card h3{font-size:17px;color:var(--white);margin-bottom:6px;}
+.card h4{font-size:14px;color:var(--accent);margin:14px 0 6px;}
+.card p{font-size:13px;margin:6px 0;}
+.card ul,.card ol{font-size:13px;margin:6px 0 6px 20px;}
+.card li{margin:4px 0;}
+.card strong{color:var(--white);}
+
+/* ─── Tabs ─── */
+.tabs{display:flex;gap:4px;margin:12px 0;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);transition:all .25s;}
+.tab:hover{border-color:var(--accent);}
+.tab.active{color:#fff;}
+.tab.t-research.active{background:linear-gradient(135deg,#059669,#10b981);border-color:transparent;}
+.tab.t-activity.active{background:linear-gradient(135deg,#7c3aed,#a855f7);border-color:transparent;}
+.tab.t-lab.active{background:linear-gradient(135deg,#e94560,#f472b6);border-color:transparent;}
+.tab.t-quiz.active{background:linear-gradient(135deg,#2563eb,#60a5fa);border-color:transparent;}
+.tab.t-tryme.active{background:linear-gradient(135deg,#c026d3,#e879f9);border-color:transparent;}
+.tryme-scenario{background:linear-gradient(135deg,rgba(192,38,211,.08),rgba(232,121,249,.06));border-left:4px solid #c026d3;border-radius:10px;padding:14px 16px;margin:10px 0;font-size:13px;color:var(--text);}
+.tryme-hint{display:inline-block;background:rgba(192,38,211,.12);color:#e879f9;font-size:10px;padding:2px 8px;border-radius:12px;margin:2px;}
+
+/* ─── AI Company Cards ─── */
+.ai-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;}
+@media(max-width:700px){.ai-compare{grid-template-columns:1fr;}}
+.ai-card{border-radius:12px;padding:14px;font-size:12px;position:relative;overflow:hidden;animation:aiCardIn .5s ease backwards;}
+.ai-card:nth-child(1){animation-delay:.1s;}.ai-card:nth-child(2){animation-delay:.25s;}.ai-card:nth-child(3){animation-delay:.4s;}
+@keyframes aiCardIn{from{opacity:0;transform:translateY(16px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ai-card.gpt{background:var(--gpt-bg);border:1px solid var(--gpt-border);}
+.ai-card.claude{background:var(--claude-bg);border:1px solid var(--claude-border);}
+.ai-card.gem{background:var(--gemini-bg);border:1px solid var(--gemini-border);}
+.ai-card .ai-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;font-size:13px;}
+.ai-card.gpt .ai-head{color:var(--gpt);}.ai-card.claude .ai-head{color:var(--claude);}.ai-card.gem .ai-head{color:var(--gemini);}
+.ai-card .model-tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;margin:2px 2px 2px 0;}
+.ai-card.gpt .model-tag{background:rgba(16,163,127,.15);color:var(--gpt);}
+.ai-card.claude .model-tag{background:rgba(217,119,6,.15);color:var(--claude);}
+.ai-card.gem .model-tag{background:rgba(66,133,244,.15);color:var(--gemini);}
+
+/* ─── Model Tiers ─── */
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;}
+@media(max-width:700px){.tier-grid{grid-template-columns:1fr;}}
+.tier-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:12px;}
+.tier-card h5{font-size:13px;margin-bottom:6px;}
+.tier-card .tier-label{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-bottom:8px;}
+.tier-flagship .tier-label{background:rgba(233,69,96,.15);color:var(--accent);}
+.tier-mid .tier-label{background:rgba(37,99,235,.15);color:var(--e);}
+.tier-fast .tier-label{background:rgba(5,150,105,.15);color:var(--c);}
+
+/* ─── Code blocks ─── */
+.code-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;}
+@media(max-width:700px){.code-compare{grid-template-columns:1fr;}}
+.code-block{border-radius:10px;padding:12px;font-family:'Fira Code','Cascadia Code',monospace;font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;word-break:break-word;}
+.code-block.gpt{background:#0d2818;border:1px solid var(--gpt-border);color:#a7f3d0;}
+.code-block.claude{background:#1c1208;border:1px solid var(--claude-border);color:#fde68a;}
+.code-block.gem{background:#0c1929;border:1px solid var(--gemini-border);color:#bfdbfe;}
+.code-label{font-size:10px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.code-label.gpt{color:var(--gpt);}.code-label.claude{color:var(--claude);}.code-label.gem{color:var(--gemini);}
+
+/* ─── Prompt layers ─── */
+.prompt-tmpl{margin:10px 0;}
+.prompt-layer{display:flex;gap:8px;align-items:flex-start;margin:4px 0;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.02);font-size:12px;}
+.prompt-label{flex-shrink:0;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;min-width:60px;text-align:center;}
+.l-r{background:var(--r);}.l-t{background:var(--t);}.l-c{background:var(--c);}.l-e{background:var(--e);}.l-f{background:var(--f);}.l-n{background:var(--n);}
+
+/* ─── Quiz ─── */
+.quiz-q{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:10px 0;animation:cardIn .4s ease;}
+.quiz-q h4{font-size:13px;color:var(--white);margin-bottom:10px;}
+.q-opt{display:block;width:100%;padding:10px 14px;margin:5px 0;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--text);font-size:12px;cursor:pointer;text-align:left;transition:all .2s;}
+.q-opt:hover:not(:disabled){border-color:var(--accent);background:rgba(233,69,96,.05);}
+.q-opt.correct{border-color:var(--c);background:rgba(5,150,105,.12);color:#a7f3d0;}
+.q-opt.wrong{border-color:var(--accent);background:rgba(233,69,96,.12);color:#fca5a5;}
+.q-exp{display:none;margin-top:8px;padding:10px;border-radius:8px;background:rgba(37,99,235,.08);font-size:12px;color:#93c5fd;border:1px solid rgba(37,99,235,.2);}
+
+/* ─── Scenario Box ─── */
+.scenario{background:linear-gradient(135deg,rgba(233,69,96,.06),rgba(124,58,237,.06));border:1px solid rgba(233,69,96,.15);border-radius:10px;padding:14px;margin:10px 0;font-size:13px;}
+
+/* ─── Animated difference bar ─── */
+.diff-bar{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px;}
+.diff-fill{height:8px;border-radius:4px;transition:width 1s ease;animation:barGrow 1.2s ease backwards;}
+@keyframes barGrow{from{width:0!important;}}
+.diff-label{min-width:70px;font-weight:600;font-size:10px;}
+.diff-val{font-size:10px;color:var(--muted);min-width:30px;text-align:right;}
+
+/* ─── Insight callout ─── */
+.insight{padding:12px 14px;border-radius:10px;margin:10px 0;font-size:12px;display:flex;gap:10px;align-items:flex-start;}
+.insight.key{background:rgba(233,69,96,.06);border:1px solid rgba(233,69,96,.15);color:#fca5a5;}
+.insight.think{background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);color:#c4b5fd;}
+.insight.warn{background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.15);color:#fed7aa;}
+.insight-icon{font-size:16px;flex-shrink:0;}
+
+/* ─── Footer ─── */
+.footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hero">
+  <h1><span>AI-First</span> Python Programming</h1>
+  <div class="sub">8 Modules | Cross-Model Comparison | Not All AI Are Alike | ASU FSE AI4CI</div>
+  <div class="philosophy">"We don't teach coding with AI bolted on. We start WITH AI, learn to THINK through AI, and discover that the human brain is the real engine. The code is just exhaust."</div>
+  <div class="ai-pills">
+    <div class="ai-pill gpt"><div class="dot"></div>ChatGPT / OpenAI</div>
+    <div class="ai-pill claude"><div class="dot"></div>Claude / Anthropic</div>
+    <div class="ai-pill gem"><div class="dot"></div>Gemini / Google</div>
+  </div>
+  <div class="sub" style="margin-top:10px;">GPT-4o &bull; GPT-4 &bull; GPT-3.5 &nbsp;|&nbsp; Opus &bull; Sonnet &bull; Haiku &nbsp;|&nbsp; Ultra &bull; Pro &bull; Flash</div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<div class="sidebar"><div style="text-align:center;font-size:11px;color:#888;margin-bottom:8px;letter-spacing:.3px;font-weight:500;">&#9757; Click to navigate modules</div>
+  <div class="mod-list" id="mod-list"></div>
+  <div class="legend">
+    <span style="color:var(--gpt);">&#9679; OpenAI</span>
+    <span style="color:var(--claude);">&#9679; Anthropic</span>
+    <span style="color:var(--gemini);">&#9679; Google</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main-content"></div>
+
+</div>
+
+<div class="footer">ASU Fulton Schools of Engineering &bull; AI4CI Initiative &bull; AI-First Python Programming &bull; Not All AI Are Alike<br>Created By: TPS - IFT - DXS</div>
+</div>
+
+<script>
+// ============================================================
+// AI MODEL DATABASE
+// ============================================================
+const AI = {
+  openai: {
+    name: "OpenAI", short: "ChatGPT", cls: "gpt", color: "#10a37f",
+    training: "RLHF (Reinforcement Learning from Human Feedback)",
+    philosophy: "Optimize for helpfulness and task completion. Confident, direct responses.",
+    models: [
+      {name:"GPT-4o",tier:"flagship",speed:"Fast",reasoning:"Excellent",code:"Excellent",cost:"$$",personality:"Confident and direct. Writes dense, efficient code. May skip edge cases if not asked."},
+      {name:"GPT-4",tier:"flagship",speed:"Slower",reasoning:"Excellent",code:"Excellent",cost:"$$$",personality:"Thorough but can be verbose. Strong reasoning chains."},
+      {name:"GPT-3.5-turbo",tier:"fast",speed:"Very Fast",reasoning:"Good",code:"Good",cost:"$",personality:"Quick but shallow. Often takes shortcuts. Misses nuance."},
+      {name:"o1 / o3",tier:"reasoning",speed:"Slow",reasoning:"Superior",code:"Excellent",cost:"$$$$",personality:"Thinks step-by-step internally. Exceptional at complex logic. Slow but deep."}
+    ]
+  },
+  anthropic: {
+    name: "Anthropic", short: "Claude", cls: "claude", color: "#d97706",
+    training: "Constitutional AI (RLHF + Self-Critique + Harmlessness Training)",
+    philosophy: "Be helpful, harmless, and honest. Cautious about safety. Explains reasoning.",
+    models: [
+      {name:"Claude Opus",tier:"flagship",speed:"Slower",reasoning:"Excellent",code:"Excellent",cost:"$$$",personality:"Deep thinker. Adds safety checks unprompted. Verbose but thorough explanations."},
+      {name:"Claude Sonnet",tier:"mid",speed:"Fast",reasoning:"Very Good",code:"Very Good",cost:"$$",personality:"Balanced speed and quality. Good at following instructions precisely."},
+      {name:"Claude Haiku",tier:"fast",speed:"Very Fast",reasoning:"Good",code:"Good",cost:"$",personality:"Quick responses. Less safety-checking. Still follows Constitutional AI principles."}
+    ]
+  },
+  google: {
+    name: "Google", short: "Gemini", cls: "gem", color: "#4285f4",
+    training: "Multimodal Training (Text + Image + Video + Audio from birth)",
+    philosophy: "Integrate multiple data types natively. Strong on factual accuracy and search.",
+    models: [
+      {name:"Gemini Ultra/1.5 Pro",tier:"flagship",speed:"Medium",reasoning:"Excellent",code:"Very Good",cost:"$$$",personality:"Strong with multi-format data. References real-world examples. Can be overly detailed."},
+      {name:"Gemini Pro",tier:"mid",speed:"Fast",reasoning:"Very Good",code:"Good",cost:"$$",personality:"Solid all-rounder. Good at following structured prompts."},
+      {name:"Gemini Flash",tier:"fast",speed:"Very Fast",reasoning:"Good",code:"Good",cost:"$",personality:"Speed-optimized. Less nuance. Good for simple tasks."}
+    ]
+  }
+};
+
+// ============================================================
+// MODULE DATA - AI-FIRST APPROACH
+// ============================================================
+const modules = [
+
+// ──────────── MODULE 1 ────────────
+{
+  title: "Module 1: Meet Your AI Partners",
+  subtitle: "Not all AI are alike. Discover why it matters.",
+  weeks: "Weeks 1-2",
+  overview: "In an AI-First course, the FIRST thing you do is meet your tools. You will interact with ChatGPT, Claude, and Gemini - and their different model tiers - from Day 1. You will see with your own eyes that the SAME question gives DIFFERENT answers from different AI. This is not a bug. This is a feature. Understanding WHY they are different is the foundation of everything.",
+
+  research: {
+    title: "Research: How Three AI Companies Think Differently",
+    content: `<p>Before you write a single line of Python, you need to understand the THREE different brains you will be working with. Each AI company trained their models using fundamentally different approaches:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; OpenAI / ChatGPT</div>
+        <p><strong>Training:</strong> RLHF - Reinforcement Learning from Human Feedback. Humans rated outputs, and the model learned to maximize those ratings.</p>
+        <p><strong>Result:</strong> Confident, direct, task-focused. Sometimes TOO confident - it will give you an answer even when it should say "I don't know."</p>
+        <div><span class="model-tag">GPT-4o</span><span class="model-tag">GPT-4</span><span class="model-tag">GPT-3.5</span><span class="model-tag">o1/o3</span></div>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Anthropic / Claude</div>
+        <p><strong>Training:</strong> Constitutional AI - RLHF PLUS the model critiques its OWN outputs against a constitution of principles (helpfulness, harmlessness, honesty).</p>
+        <p><strong>Result:</strong> More cautious. Adds safety checks, disclaimers, and error handling that you did not ask for. Explains its reasoning.</p>
+        <div><span class="model-tag">Opus</span><span class="model-tag">Sonnet</span><span class="model-tag">Haiku</span></div>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Google / Gemini</div>
+        <p><strong>Training:</strong> Multimodal from birth - trained on text, images, video, AND audio simultaneously. Not bolted on after, built in from the start.</p>
+        <p><strong>Result:</strong> Strong with mixed data types. References real-world sources. Connected to Google Search for factual grounding.</p>
+        <div><span class="model-tag">Ultra/1.5 Pro</span><span class="model-tag">Pro</span><span class="model-tag">Flash</span></div>
+      </div>
+    </div>
+    <div class="insight key"><span class="insight-icon">&#9888;</span><span><strong>Key Insight:</strong> Substituting one AI for another is like substituting a hammer for a screwdriver. They are BOTH tools, but they were designed for different purposes. A good engineer picks the right tool for the right job.</span></div>
+    <h4>Model Tiers - Not All Models Within a Company Are Equal Either:</h4>
+    <div class="tier-grid">
+      <div class="tier-card tier-flagship"><span class="tier-label">Flagship</span><h5>GPT-4o / Opus / Ultra</h5><p>Best quality. Deepest reasoning. Slowest. Most expensive. Use for complex architecture and design decisions.</p></div>
+      <div class="tier-card tier-mid"><span class="tier-label">Mid-Tier</span><h5>GPT-4 / Sonnet / Pro</h5><p>Good balance of speed and quality. Use for most development tasks and code generation.</p></div>
+      <div class="tier-card tier-fast"><span class="tier-label">Fast</span><h5>GPT-3.5 / Haiku / Flash</h5><p>Fastest. Cheapest. Least nuance. Use for simple tasks, quick lookups, syntax checks.</p></div>
+    </div>`
+  },
+
+  activity: {
+    title: "Activity: The Same Question, Three Different Answers",
+    scenario: "Ask ALL three AI companies the EXACT same question. Compare what you get. This is your first lesson that AI is NOT one thing.",
+    prompt: {
+      role: "You are a Python tutor for a complete beginner who has never programmed before.",
+      task: "Explain what a variable is in Python. Give me one simple example.",
+      context: "I am a first-year university student with no programming background. I need to understand this concept in simple words.",
+      exemplar: "A good explanation would be like: 'Think of a variable like a labeled box...'",
+      format: "3 paragraphs maximum. Use one code example. No jargon.",
+      note: "Keep it simple. If you use any technical term, define it immediately."
+    },
+    steps: [
+      "Copy the EXACT same 6-layer prompt into ChatGPT (GPT-4o)",
+      "Copy the EXACT same prompt into Claude (Sonnet)",
+      "Copy the EXACT same prompt into Gemini (Pro)",
+      "Now do it again with the CHEAPEST models: GPT-3.5, Haiku, Flash",
+      "Put all 6 responses side by side. What is different?",
+      "Write down: Which one explained it best for YOU? Why?",
+      "Write down: Which one added information you did NOT ask for?",
+      "Write down: Which one was most concise? Most verbose?"
+    ],
+    compare_note: "You will discover that Claude adds safety notes ('remember, variable names should be meaningful'), GPT is more direct ('here is how it works'), and Gemini may reference real-world analogies. The cheaper models give shorter, less nuanced answers."
+  },
+
+  lab: {
+    title: "Lab: Build Your AI Comparison Journal",
+    scenario: "Create a Python script that helps you log and compare AI responses. This is your FIRST code - and you are going to ask AI to write it FOR you.",
+    codes: {
+      gpt: {label:"ChatGPT might give you:", code:"# ChatGPT tends to be direct and efficient\nresponses = {}\n\ndef log_response(ai_name, model, question, answer):\n    key = f\"{ai_name}_{model}\"\n    if key not in responses:\n        responses[key] = []\n    responses[key].append({\"q\": question, \"a\": answer})\n\ndef compare(question):\n    for key, logs in responses.items():\n        for log in logs:\n            if log[\"q\"] == question:\n                print(f\"{key}: {log['a'][:100]}...\")"},
+      claude: {label:"Claude might give you:", code:"# Claude tends to add validation and docstrings\nresponses = {}\n\ndef log_response(ai_name, model, question, answer):\n    \"\"\"ONE job: Store a single AI response for later comparison.\"\"\"\n    if not ai_name or not question:\n        print(\"Error: AI name and question are required.\")\n        return\n    key = f\"{ai_name}_{model}\"\n    if key not in responses:\n        responses[key] = []\n    responses[key].append({\n        \"question\": question,\n        \"answer\": answer,\n        \"timestamp\": \"logged\"  # Claude adds metadata\n    })\n    print(f\"Logged response from {key} successfully.\")"},
+      gemini: {label:"Gemini might give you:", code:"# Gemini tends to add real-world context\nfrom datetime import datetime\n\nresponses = {}\n\ndef log_response(ai_name, model, question, answer):\n    \"\"\"Log an AI response with metadata for comparison.\"\"\"\n    key = f\"{ai_name} ({model})\"\n    entry = {\n        \"question\": question,\n        \"answer\": answer,\n        \"logged_at\": datetime.now().isoformat(),\n        \"word_count\": len(answer.split())\n    }\n    responses.setdefault(key, []).append(entry)\n    # Gemini often adds practical features like word count"}
+    },
+    tasks: [
+      "Send the SAME prompt to all 3 AI models asking for an 'AI comparison logger in Python'",
+      "Compare: Which model added error handling without being asked? (Probably Claude)",
+      "Compare: Which model added extra features like timestamps? (Varies!)",
+      "Compare: Which model had the most concise code? (Probably GPT)",
+      "Choose the BEST parts from each and combine into YOUR version",
+      "Run your combined version in Python - does it work?",
+      "If it crashes, note WHICH model's code caused the issue and WHY"
+    ]
+  },
+
+  quiz: [
+    {q:"Why do ChatGPT, Claude, and Gemini give DIFFERENT answers to the same question?",opts:["They are all broken in different ways","They were trained using fundamentally different methods and philosophies","One is just better than the others","They all use the same code underneath"],ans:1,exp:"Each company used different training approaches: OpenAI uses RLHF (optimize for helpfulness), Anthropic uses Constitutional AI (optimize for helpfulness + safety), Google uses Multimodal Training (optimize for multi-format data). Different training creates different personalities."},
+    {q:"Which AI model tier should you use for complex architecture decisions?",opts:["Fast tier (GPT-3.5/Haiku/Flash) because speed matters","Mid-tier (GPT-4/Sonnet/Pro) for balance","Flagship (GPT-4o/Opus/Ultra) for deepest reasoning","It does not matter, they are all the same"],ans:2,exp:"Flagship models have the deepest reasoning capabilities. For architecture decisions where you need the AI to think through tradeoffs and edge cases, the flagship tier gives the best results. Speed tier is for simple tasks."},
+    {q:"In an AI-First approach, what do you do FIRST in a programming course?",opts:["Learn Python syntax","Write Hello World","Interact with all 3 AI platforms and compare their responses","Read a textbook"],ans:2,exp:"AI-First means you START with AI, not end with it. Day 1 you meet all your AI partners, see that they are different, and understand WHY. This builds the foundation for everything that follows."},
+    {q:"If Claude adds safety disclaimers to code that GPT-4o does not add, what does that tell you?",opts:["Claude is worse because it wastes space","Claude is better because safety matters","Their Constitutional AI training makes them prioritize different things","You should ignore both"],ans:2,exp:"This shows that TRAINING shapes behavior. Constitutional AI makes Claude more cautious. RLHF makes GPT more task-focused. Neither is better or worse - they are DIFFERENT tools for different situations. Understanding this is the key insight."}
+  ],
+  tryme: {
+  title: 'Try Me: Movie Recommendation System',
+  scenario: 'You&#39;re building a personal movie recommendation system and want to see which AI partner understands your taste best. Submit your top 5 favorite movies to ChatGPT, Claude, and Gemini, then ask each to recommend 3 new movies based on those preferences. Notice how each AI recommends differently based on their training and priorities.',
+  hints: {
+    role: 'Hint: You are a student discovering that different AI partners have different strengths and perspectives.',
+    task: 'Hint: Ask each AI the exact same question: "Given these 5 movies I love [list them], what 3 movies would you recommend and why?"',
+    context: 'Hint: Include your actual movie preferences to get authentic, personalized responses.',
+    exemplar: 'Hint: One AI might focus on narrative, another on technical filmmaking, and another on cultural impact.',
+    format: 'Hint: Request the response as a numbered list with movie titles, genres, and one-sentence explanations.',
+    note: 'Hint: Save the three responses side-by-side so you can compare their reasoning and recommendation styles.'
+  },
+  steps: [
+    'Submit your 5 favorite movies to ChatGPT and ask for 3 personalized recommendations with explanations.',
+    'Submit the same prompt to Claude and compare how it recommends movies differently.',
+    'Submit to Gemini and notice its unique approach to understanding your taste.',
+    'Compare: Which AI best understood your preferences? Which recommendations surprised you?',
+    'Reflect: How did each AI&#39;s reasoning differ? What does this tell you about their different strengths?'
+  ]
+},
+},
+
+// ──────────── MODULE 2 ────────────
+{
+  title: "Module 2: AI-First Decomposition",
+  subtitle: "Ask AI to decompose. Then judge WHO did it better.",
+  weeks: "Weeks 3-4",
+  overview: "In the bolted-on approach, you learn decomposition from a textbook, then ask AI for help. In the AI-First approach, you give the SAME problem to all 3 AI companies and compare HOW they decompose it. You learn decomposition BY SEEING three different expert approaches and judging which thinking is best. YOUR job is not to decompose - your job is to EVALUATE decomposition.",
+
+  research: {
+    title: "Research: How Different AI Models Decompose the Same Problem",
+    content: `<p>Decomposition means breaking a big problem into small, single-responsibility pieces. But here is what nobody tells you: <strong>there is no single correct way to decompose a problem.</strong> Different experts decompose differently based on their experience and priorities.</p>
+    <p>When you ask three AI companies to decompose the same problem, you see three DIFFERENT decomposition strategies:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT Decomposition Style</div>
+        <p><strong>Tends to:</strong> Jump straight to functions. Lists them efficiently. Focuses on WHAT to build. Minimal explanation of WHY.</p>
+        <p><strong>Strength:</strong> Fast, practical, action-oriented</p>
+        <p><strong>Weakness:</strong> May skip edge cases and error handling in the decomposition</p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude Decomposition Style</div>
+        <p><strong>Tends to:</strong> Start with understanding the problem FIRST. Asks clarifying questions. Decomposes with error handling built in from the start.</p>
+        <p><strong>Strength:</strong> Thorough, safety-conscious, explains reasoning</p>
+        <p><strong>Weakness:</strong> Can be overly cautious, more verbose</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini Decomposition Style</div>
+        <p><strong>Tends to:</strong> Reference real-world patterns and established architectures. Connects to existing solutions. May suggest libraries.</p>
+        <p><strong>Strength:</strong> Practical, real-world grounded, comprehensive</p>
+        <p><strong>Weakness:</strong> May over-engineer simple problems by referencing complex patterns</p>
+      </div>
+    </div>
+    <div class="insight think"><span class="insight-icon">&#128161;</span><span><strong>AI-First Insight:</strong> You learn decomposition NOT by doing it yourself first, but by seeing THREE expert decompositions and developing the judgment to evaluate which approach is best for the situation. The thinking skill is EVALUATION, not creation.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: The Coffee Shop Decomposition Showdown",
+    scenario: "A coffee shop needs an ordering system. Give the EXACT same problem to ChatGPT, Claude, and Gemini. Compare how each AI decomposes it. Then YOU decide which decomposition is best and WHY.",
+    prompt: {
+      role: "You are a software architect designing a system for a small coffee shop. You follow the Single Responsibility Principle - every component does ONE thing.",
+      task: "Decompose a coffee shop ordering system into single-responsibility components. For each component list: (1) its ONE job, (2) what data it needs, (3) what it outputs, (4) what can go wrong.",
+      context: "The coffee shop has a menu with drinks and food, takes customer orders, calculates totals with tax, applies discounts for loyalty members, and prints receipts. About 100 customers per day. Staff are not technical.",
+      exemplar: "Example component:\nComponent: calculate_subtotal\n- ONE job: Add up prices of all items in an order\n- Input: list of ordered items with prices\n- Output: subtotal (number)\n- Failure: empty order, item with no price listed",
+      format: "A numbered list of components. For each one show: name, ONE job, input, output, failure modes. Then show how they connect to each other.",
+      note: "Do NOT write any code. This is a THINKING exercise. Focus on the decomposition, not the implementation. I want to see your reasoning about WHY you split things this way."
+    },
+    steps: [
+      "Send this EXACT prompt to ChatGPT (GPT-4o) - save the response",
+      "Send the SAME prompt to Claude (Sonnet) - save the response",
+      "Send the SAME prompt to Gemini (Pro) - save the response",
+      "Count: How many components did each AI identify?",
+      "Compare: Did they all identify the same components? What did each one MISS?",
+      "Compare: Which AI explained WHY it decomposed this way? Which just listed?",
+      "Compare: Which AI thought about failure modes most thoroughly?",
+      "YOUR JUDGMENT: Combine the best ideas from all three into YOUR decomposition",
+      "NOW send to the cheap models (GPT-3.5, Haiku, Flash) - how much quality drops?"
+    ],
+    compare_note: "Typical results: GPT gives 5-7 functions quickly. Claude gives 8-10 with error handling included. Gemini gives 6-8 with real-world references. The cheap models give 3-4 with minimal detail."
+  },
+
+  lab: {
+    title: "Lab: Decomposition Quality Scoring System",
+    scenario: "Build a Python tool that scores how well an AI decomposed a problem. You define the CRITERIA, AI writes the code.",
+    codes: {
+      gpt: {label:"GPT might score like this:", code:"# GPT: Direct, function-focused scoring\ndef score_decomposition(components):\n    score = 0\n    score += min(len(components), 10)  # More components = better (max 10)\n    for c in components:\n        if 'error' in c.lower(): score += 1  # Has error handling\n        if 'input' in c.lower(): score += 1  # Defines inputs\n        if 'output' in c.lower(): score += 1  # Defines outputs\n    return score\n# Simple. Fast. Gets the job done. But misses SRP checking."},
+      claude: {label:"Claude might score like this:", code:"# Claude: Thorough, safety-conscious scoring\ndef score_decomposition(components):\n    \"\"\"ONE job: Evaluate quality of a problem decomposition.\"\"\"\n    if not components:\n        return {\"score\": 0, \"feedback\": \"No components provided.\"}\n    \n    scores = {\n        \"srp_compliance\": 0,    # Does each do ONE thing?\n        \"error_handling\": 0,    # Are failure modes listed?\n        \"completeness\": 0,      # Are inputs/outputs defined?\n        \"clarity\": 0            # Is naming clear?\n    }\n    \n    for comp in components:\n        if has_single_responsibility(comp): scores[\"srp_compliance\"] += 1\n        if lists_failure_modes(comp): scores[\"error_handling\"] += 1\n        if defines_io(comp): scores[\"completeness\"] += 1\n    \n    # Claude adds a qualitative note\n    total = sum(scores.values())\n    return {\"score\": total, \"breakdown\": scores,\n            \"note\": \"Consider edge cases\" if scores[\"error_handling\"] < 3 else \"Good coverage\"}"},
+      gemini: {label:"Gemini might score like this:", code:"# Gemini: Practical, references real patterns\nimport json\nfrom datetime import datetime\n\ndef score_decomposition(components, domain=\"general\"):\n    \"\"\"Score decomposition quality against industry patterns.\"\"\"\n    \n    # Gemini references known patterns\n    EXPECTED_PATTERNS = {\n        \"coffee_shop\": [\"order\", \"payment\", \"inventory\", \"receipt\", \"discount\"],\n        \"calculator\": [\"input\", \"validate\", \"calculate\", \"display\", \"error\"]\n    }\n    \n    coverage = 0\n    if domain in EXPECTED_PATTERNS:\n        expected = EXPECTED_PATTERNS[domain]\n        found = [p for p in expected if any(p in c.lower() for c in components)]\n        coverage = len(found) / len(expected)\n    \n    return {\n        \"component_count\": len(components),\n        \"pattern_coverage\": f\"{coverage:.0%}\",\n        \"assessed_at\": datetime.now().isoformat()\n    }"}
+    },
+    tasks: [
+      "Send the SAME scoring prompt to all 3 AI companies",
+      "Compare: GPT's scorer vs Claude's scorer vs Gemini's scorer - what is different?",
+      "Notice: Claude probably added validation and breakdown. GPT was concise. Gemini referenced patterns.",
+      "Combine the BEST ideas: Claude's breakdown + Gemini's pattern matching + GPT's simplicity",
+      "Run your combined scorer against the coffee shop decompositions from the Activity",
+      "Which AI's decomposition scores highest on YOUR scorer?",
+      "BREAK IT: Feed an empty list. Feed garbage data. Which model handled errors best?"
+    ]
+  },
+
+  quiz: [
+    {q:"In an AI-First approach, how do you learn decomposition?",opts:["Read a textbook chapter on decomposition","Do decomposition yourself first, then check with AI","Give the problem to multiple AI models and EVALUATE their decompositions","Just use whatever AI gives you without thinking"],ans:2,exp:"AI-First means you learn by evaluating expert outputs. When you see three different AI decompositions, you develop JUDGMENT - which is more valuable than doing one decomposition yourself."},
+    {q:"You gave the same coffee shop problem to GPT-4o, Sonnet, and Gemini Pro. GPT gave 5 components, Claude gave 9, Gemini gave 7. What does this tell you?",opts:["Claude is better because it has more","GPT is better because simpler is better","Different AI prioritize different aspects of the problem","The one with the most components wins"],ans:2,exp:"More components is not always better. GPT may have combined related tasks. Claude may have separated error handling into its own components. Gemini may have found a middle ground. The RIGHT number depends on the problem."},
+    {q:"Why should you also test with cheap models (GPT-3.5, Haiku, Flash) and not just flagship models?",opts:["To save money","To see how much quality drops, which teaches you what the flagship models actually add","Cheap models are always better for beginners","There is no difference between model tiers"],ans:1,exp:"When you see the quality difference between flagship and cheap, you learn what REASONING looks like. The cheap model output shows you what is MISSING - that teaches you to recognize quality."},
+    {q:"After comparing all three AI decompositions, what should you do?",opts:["Pick the one you like best and use it exactly","Combine the best ideas from all three into YOUR version","They are all wrong, start from scratch","It does not matter, just use any one"],ans:1,exp:"The AI-First skill is SYNTHESIS - taking the best parts from multiple expert perspectives and combining them with YOUR judgment. This is higher-order thinking than just decomposing from scratch."}
+  ],
+  tryme: {
+  title: 'Try Me: Library Book Tracking System',
+  scenario: 'You&#39;re helping your local library modernize by building a book tracking system. Instead of building it yourself, ask each AI partner to decompose the problem into functions, classes, and data flows. See which AI breaks down the system most logically and how different approaches emerge from the same problem.',
+  hints: {
+    role: 'Hint: You are a software designer asking AI partners for different system architectures.',
+    task: 'Hint: Ask each AI: "Design a library book tracking system. What classes, functions, and data structures would you use? Show me the decomposition."',
+    context: 'Hint: Mention you need to track book inventory, checkouts, due dates, late fees, and patron histories.',
+    exemplar: 'Hint: One AI might use object-oriented design with Book and Patron classes; another might prefer functional composition.',
+    format: 'Hint: Request a text outline showing classes/functions with 1-2 sentence descriptions of each.',
+    note: 'Hint: Look for differences in how each AI prioritizes: simplicity, extensibility, or scalability.'
+  },
+  steps: [
+    'Ask ChatGPT to decompose a library system into functions and classes, requesting a clear hierarchy.',
+    'Ask Claude to design the same system and compare its decomposition strategy.',
+    'Ask Gemini for its approach and notice where it breaks down the problem differently.',
+    'Compare: Which decomposition is clearest? Which would be easiest to code?',
+    'Reflect: What does each AI&#39;s approach tell you about their design philosophy?'
+  ]
+},
+},
+
+// ──────────── MODULE 3 ────────────
+{
+  title: "Module 3: Data Through AI Eyes",
+  subtitle: "Three AI companies. Three ways to see data. One truth.",
+  weeks: "Weeks 5-6",
+  overview: "Data types, variables, lists, dictionaries - every AI explains them differently and USES them differently in code. In this module you give data-handling tasks to all three AI companies and discover that GPT tends towards compact data structures, Claude adds type validation, and Gemini references real-world data formats. You learn data by seeing how three experts handle it.",
+
+  research: {
+    title: "Research: How AI Models Handle Data Differently",
+    content: `<p>When you ask AI to create a data structure for a real-world problem, the training shows through immediately:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT's Data Style</div>
+        <p>Favors compact, efficient structures. Uses list comprehensions. Tends to use simple dictionaries. Assumes valid data - may skip type checking.</p>
+        <p><strong>Typical pattern:</strong> <code>students = [{"name": "Jo", "grade": 90}]</code></p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude's Data Style</div>
+        <p>Adds validation layers. Wraps data in functions that check types. Uses more descriptive keys. Adds docstrings explaining data shapes.</p>
+        <p><strong>Typical pattern:</strong> Creates a <code>create_student()</code> function that validates before storing.</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini's Data Style</div>
+        <p>References standard formats (JSON, CSV). Adds metadata like timestamps. May suggest external libraries (pandas). Thinks about data interchange.</p>
+        <p><strong>Typical pattern:</strong> Structures data in a way that could be serialized/exported.</p>
+      </div>
+    </div>
+    <div class="insight warn"><span class="insight-icon">&#9888;</span><span><strong>Critical Difference:</strong> Ask all three to handle a grade that is entered as "ninety" instead of 90. GPT might crash. Claude will validate first. Gemini might try to convert it. This is where training differences become REAL.</span></div>
+    <h4>The Data Type Challenge Across Model Tiers:</h4>
+    <p>Ask the SAME data question to flagship vs fast models within each company. You will see that flagship models handle edge cases, while fast models take the happy path. This teaches you what "depth of reasoning" actually means in practice.</p>`
+  },
+
+  activity: {
+    title: "Activity: Student Grade Tracker - Three AI Architects",
+    scenario: "A professor needs to track student grades. Ask all three AI companies to design the data structure. Compare not just WHAT they build, but HOW they think about data.",
+    prompt: {
+      role: "You are a data architect designing a grade tracking system for a university professor. You prioritize data integrity - bad data should be impossible to enter.",
+      task: "Design a Python data structure for tracking student grades. Include: student name, student ID, course name, assignments (name + score + max possible), final grade calculation, and a way to flag students who are failing.",
+      context: "This professor teaches 3 courses with 30 students each. Some students are in multiple courses. Assignments have different point values. The professor is not technical and will enter data manually. Human errors in data entry are COMMON.",
+      exemplar: "One student record might look like:\nstudent: Alice Chen, ID: 1234\n  CSE100: Assignment 1 (85/100), Midterm (72/150)\n  CSE200: Lab 1 (10/10), Project (45/50)",
+      format: "Show me: (1) The data structure design, (2) A function to add a grade with validation, (3) A function to calculate final grade, (4) What happens when someone enters invalid data.",
+      note: "Do NOT use any external libraries. Show me how you handle: duplicate student IDs, grades above maximum points, negative grades, and missing assignments. I want to see the THINKING behind the design, not just the code."
+    },
+    steps: [
+      "Send to GPT-4o, Sonnet, and Gemini Pro - save all three responses",
+      "Compare data structures: How did each one organize student records?",
+      "Compare validation: Which AI added the most input checking?",
+      "Compare error messages: Which gives the most helpful error when you enter 'ninety' instead of 90?",
+      "NOW send to GPT-3.5, Haiku, Flash - how much validation disappears?",
+      "Count the lines of code from each: More lines = more thorough? Or just more verbose?",
+      "YOUR DECISION: Which data structure would YOU trust with real student grades? Why?"
+    ],
+    compare_note: "Watch for: GPT often creates a clean but minimal dictionary. Claude wraps everything in validation functions. Gemini may suggest a class-based approach. The fast models usually skip validation entirely."
+  },
+
+  lab: {
+    title: "Lab: Data Integrity Battle - Break Each AI's Code",
+    scenario: "Take the grade tracker code from each AI and deliberately try to BREAK it with bad data. Learning by failure across all three models.",
+    codes: {
+      gpt: {label:"GPT's grade tracker (test this):", code:"# GPT: Clean and compact\nstudents = {}\n\ndef add_grade(student_id, name, course, assignment, score, max_score):\n    if student_id not in students:\n        students[student_id] = {\"name\": name, \"courses\": {}}\n    if course not in students[student_id][\"courses\"]:\n        students[student_id][\"courses\"][course] = []\n    students[student_id][\"courses\"][course].append(\n        {\"assignment\": assignment, \"score\": score, \"max\": max_score}\n    )\n\n# TRY TO BREAK IT:\n# add_grade(\"\", \"\", \"\", \"\", \"ninety\", 100)\n# add_grade(123, \"Alice\", \"CSE\", \"HW1\", 150, 100)  # score > max!\n# add_grade(123, \"Alice\", \"CSE\", \"HW1\", -5, 100)   # negative!"},
+      claude: {label:"Claude's grade tracker (test this):", code:"# Claude: Validation-heavy\nstudents = {}\n\ndef add_grade(student_id, name, course, assignment, score, max_score):\n    \"\"\"ONE job: Add a validated grade to the system.\"\"\"\n    # Claude validates EVERYTHING\n    if not student_id:\n        return {\"success\": False, \"error\": \"Student ID is required\"}\n    if not isinstance(score, (int, float)):\n        return {\"success\": False, \"error\": f\"Score must be a number, got {type(score).__name__}\"}\n    if score < 0:\n        return {\"success\": False, \"error\": \"Score cannot be negative\"}\n    if score > max_score:\n        return {\"success\": False, \"error\": f\"Score {score} exceeds maximum {max_score}\"}\n    \n    # Only AFTER validation do we store\n    if student_id not in students:\n        students[student_id] = {\"name\": name, \"courses\": {}}\n    if course not in students[student_id][\"courses\"]:\n        students[student_id][\"courses\"][course] = []\n    students[student_id][\"courses\"][course].append(\n        {\"assignment\": assignment, \"score\": score, \"max\": max_score}\n    )\n    return {\"success\": True}\n\n# SAME BREAK TESTS - but Claude catches them!"},
+      gemini: {label:"Gemini's grade tracker (test this):", code:"# Gemini: Structured with metadata\nfrom datetime import datetime\n\nclass GradeTracker:\n    def __init__(self):\n        self.students = {}\n        self.log = []  # Gemini adds audit trail\n    \n    def add_grade(self, student_id, name, course, assignment, score, max_score):\n        \"\"\"Add grade with logging and validation.\"\"\"\n        try:\n            score = float(score)  # Gemini tries to CONVERT\n            max_score = float(max_score)\n        except (ValueError, TypeError):\n            self.log.append(f\"REJECTED: invalid score for {name}\")\n            return False\n        \n        if student_id not in self.students:\n            self.students[student_id] = {\n                \"name\": name, \"courses\": {}, \n                \"created\": datetime.now().isoformat()\n            }\n        # Gemini adds metadata other models skip\n        entry = {\"assignment\": assignment, \"score\": score,\n                 \"max\": max_score, \"entered\": datetime.now().isoformat()}\n        self.students[student_id][\"courses\"].setdefault(course, []).append(entry)\n        return True"}
+    },
+    tasks: [
+      "Run ALL three versions in Python",
+      "Feed EACH version these bad inputs: empty string, 'ninety', 150/100, -5, None",
+      "Record: Which version CRASHED? Which handled the error gracefully?",
+      "Record: Which version gave the most HELPFUL error message?",
+      "Record: Which version LOST data silently? (This is the WORST failure)",
+      "Combine best error handling from all three into YOUR version",
+      "Send YOUR version to all 3 AI for review - do they find bugs YOU missed?"
+    ]
+  },
+
+  quiz: [
+    {q:"You send the same data task to all 3 AI. Claude returns code with 15 lines of validation. GPT returns code with 0 validation. Which is better?",opts:["Claude because validation is always important","GPT because less code is better","It depends on the use case - student grades NEED validation, a quick script might not","They are equally good"],ans:2,exp:"Context matters! For student grades (real data, manual entry), Claude's validation is critical. For a throwaway script, GPT's directness is fine. The AI-First skill is knowing WHEN validation matters."},
+    {q:"Gemini tried to convert the string 'ninety' to a number using float(). GPT crashed. Claude rejected it with an error message. Which approach is best for a grade tracker?",opts:["Gemini because it tried to be helpful","GPT because crashing tells you something is wrong","Claude because it explicitly tells the user what went wrong and why","All three are equally valid"],ans:2,exp:"For a system where data integrity matters, EXPLICIT rejection with a clear error message is best. Silent conversion could turn 'ninety' into an error without the user knowing. Crashing loses ALL data. Claude's approach protects data AND informs the user."},
+    {q:"When you test flagship models vs fast models on the same data task, the fast models skip validation. Why?",opts:["They are broken","Smaller models have less reasoning capacity to think about edge cases","Fast models are newer and better","Validation is not important for fast models"],ans:1,exp:"Fast models (GPT-3.5, Haiku, Flash) have less reasoning depth. They solve the happy path but lack the capacity to think about what could go wrong. This is why model selection matters - cheap is not always appropriate."},
+    {q:"After comparing all three AI approaches to data handling, the most important lesson is:",opts:["Always use Claude because it validates","Always use GPT because it is concise","Always use Gemini because it adds metadata","Different AI have different strengths - learn to pick the right one for each task"],ans:3,exp:"The whole point of AI-First is that you learn to be an EVALUATOR of AI outputs. No single model is best for everything. YOUR value as an engineer is knowing which approach to use when."}
+  ],
+  tryme: {
+  title: 'Try Me: Personal Budget Tracker',
+  scenario: 'You&#39;re struggling to manage your college finances and want to build a budget tracker. Ask each AI how they would structure the data (what variables, data types, and structures are needed). See how differently each AI thinks about organizing financial information.',
+  hints: {
+    role: 'Hint: You are a student trying to understand data design from multiple AI perspectives.',
+    task: 'Hint: Ask each AI: "Design the data model for a personal budget tracker. What variables and data structures do I need?"',
+    context: 'Hint: You need to track income, expenses by category, savings goals, transactions with dates, and monthly reports.',
+    exemplar: 'Hint: One AI might use dictionaries for categories, another might design a nested structure, another might suggest a relational model.',
+    format: 'Hint: Request Python pseudocode or a data structure diagram showing variables, types, and relationships.',
+    note: 'Hint: Pay attention to which AI considers edge cases like multiple income sources or budget overages.'
+  },
+  steps: [
+    'Ask ChatGPT how to structure data for a budget tracker with income, expenses, categories, and dates.',
+    'Ask Claude to design the same data model and compare how it organizes the information.',
+    'Ask Gemini for its data design approach and notice structural differences.',
+    'Compare: Which data model is most flexible? Which is easiest to understand?',
+    'Reflect: How did each AI decide what data to store and how to relate it?'
+  ]
+},
+},
+
+// ──────────── MODULE 4 ────────────
+{
+  title: "Module 4: Decision Logic Across AI Minds",
+  subtitle: "Same rules. Three different implementations. Who reasons best?",
+  weeks: "Weeks 7-8",
+  overview: "Decision logic (if/elif/else) is where AI training differences become most visible. Given the SAME set of business rules, ChatGPT writes compact conditionals, Claude adds exhaustive edge case handling, and Gemini may reference established decision patterns. You will see that HOW an AI structures decisions reveals HOW it was trained to reason.",
+
+  research: {
+    title: "Research: How AI Training Shapes Decision Logic",
+    content: `<p>Decision logic is where reasoning lives. When you ask AI to implement business rules, you see their training philosophy in every if/else branch:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT Decision Style</div>
+        <p><strong>Pattern:</strong> Direct, compact if/elif chains. Handles the expected cases efficiently. May use ternary operators for brevity.</p>
+        <p><strong>Blind spot:</strong> Often misses the "else" fallback. Assumes inputs are valid.</p>
+        <p><strong>Example tendency:</strong> <code>return "A" if grade >= 90 else "B" if grade >= 80 else "F"</code></p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude Decision Style</div>
+        <p><strong>Pattern:</strong> Guards first, then logic. Validates ALL inputs before any decision. Every branch has explicit handling. Never leaves a case uncovered.</p>
+        <p><strong>Blind spot:</strong> Can be overly cautious - adds branches for cases that might never happen.</p>
+        <p><strong>Example tendency:</strong> Checks for None, negative, string, then empty, THEN does the actual grade logic.</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini Decision Style</div>
+        <p><strong>Pattern:</strong> May use lookup tables or dictionaries instead of if/else. References established patterns. Sometimes suggests configuration-driven decisions.</p>
+        <p><strong>Blind spot:</strong> Can over-engineer simple decisions with complex patterns.</p>
+        <p><strong>Example tendency:</strong> <code>GRADE_MAP = [(90,"A"),(80,"B")...]</code> with a loop instead of if/else.</p>
+      </div>
+    </div>
+    <div class="insight key"><span class="insight-icon">&#9888;</span><span><strong>Why This Matters for YOUR Career:</strong> In the real world, you will review AI-generated decision logic. If you cannot evaluate whether the AI covered all cases, you will ship bugs. The AI-First approach trains you to be the quality gate, not just the code typer.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: ER Triage System - Three AI Doctors",
+    scenario: "An emergency room needs triage logic. The SAME medical rules go to all three AI companies. Compare how each one handles life-and-death decisions in code.",
+    prompt: {
+      role: "You are a medical software engineer building triage decision logic for an emergency room. Patient safety is the TOP priority. Missing a critical case could be fatal. Every decision must be traceable.",
+      task: "Implement a triage function that takes patient vitals (heart rate, blood pressure systolic, temperature, consciousness level 1-4, pain level 1-10) and returns a priority level: CRITICAL (immediate), URGENT (within 15 min), STANDARD (within 1 hour), NON-URGENT (can wait). Include the reasoning for the decision.",
+      context: "This is for a teaching hospital. Medical residents will use this system. It must explain WHY each decision was made so residents learn. Real patient data will flow through this. Errors are not acceptable. This runs 24/7 with no downtime.",
+      exemplar: "Example decision:\nPatient: HR=140, BP=85, Temp=103, Consciousness=2, Pain=8\nResult: CRITICAL\nReason: Heart rate dangerously elevated + low BP indicates possible shock + altered consciousness",
+      format: "A single Python function with: (1) Input validation for ALL vitals, (2) Decision logic with clear thresholds, (3) A reason string explaining the decision, (4) Handling for incomplete data (what if a vital is missing?).",
+      note: "This is a SAFETY-CRITICAL system. Claude's Constitutional AI training should be especially visible here. Compare carefully how each AI handles the responsibility of medical decisions. Do NOT use this code for real medical purposes - this is an educational exercise."
+    },
+    steps: [
+      "Send this EXACT prompt to GPT-4o, Sonnet, Gemini Pro",
+      "CRITICAL QUESTION: Which AI added a disclaimer about not using this for real medical decisions?",
+      "Compare thresholds: Do all three use the same heart rate cutoffs? Blood pressure cutoffs?",
+      "Compare safety: Which AI defaulted to CRITICAL when data was uncertain? (The safest choice)",
+      "Compare reasoning: Which AI's reason strings are most helpful for a medical resident?",
+      "NOW test with GPT-3.5, Haiku, Flash - does the safety level drop with cheaper models?",
+      "YOUR JUDGMENT: For a safety-critical system, which model would you trust? Why?",
+      "KEY LEARNING: Notice how Constitutional AI (Claude) vs RLHF (GPT) vs Multimodal (Gemini) handle RISK differently"
+    ],
+    compare_note: "Expected: Claude will almost certainly add medical disclaimers, default to CRITICAL for uncertain cases, and validate every input. GPT will be efficient but may miss edge cases. Gemini may reference WHO guidelines. The cheap models will likely produce unsafe triage logic."
+  },
+
+  lab: {
+    title: "Lab: Decision Logic Audit - Find the Bugs All Three AI Missed",
+    scenario: "Take the triage code from all three AI companies. Test it with edge cases that NONE of them thought about. This is Learning by Failure across multiple AI.",
+    codes: {
+      gpt: {label:"GPT's triage (find the gaps):", code:"def triage(hr, bp, temp, conscious, pain):\n    if conscious <= 1 or hr > 150 or bp < 80:\n        return \"CRITICAL\", \"Life-threatening vitals\"\n    if hr > 120 or bp < 90 or temp > 103 or pain >= 8:\n        return \"URGENT\", \"Elevated vitals need attention\"\n    if hr > 100 or temp > 100 or pain >= 5:\n        return \"STANDARD\", \"Monitoring needed\"\n    return \"NON-URGENT\", \"Stable vitals\"\n\n# EDGE CASES TO TRY:\n# triage(0, 120, 98, 4, 0)   - HR of 0? Patient is dead!\n# triage(80, 120, 98, 4, -1) - Negative pain?\n# triage(None, 120, 98, 4, 5) - Missing data?"},
+      claude: {label:"Claude's triage (find the gaps):", code:"def triage(hr, bp, temp, conscious, pain):\n    \"\"\"ONE job: Determine triage priority with safety-first logic.\"\"\"\n    # Validate inputs first (Constitutional AI in action)\n    for name, val, low, high in [\n        (\"heart_rate\", hr, 20, 250),\n        (\"blood_pressure\", bp, 40, 250),\n        (\"temperature\", temp, 85, 110),\n        (\"consciousness\", conscious, 1, 4),\n        (\"pain\", pain, 0, 10)]:\n        if val is None:\n            return \"CRITICAL\", f\"SAFETY: Missing {name} - assume worst\"\n        if not isinstance(val, (int, float)):\n            return \"CRITICAL\", f\"SAFETY: Invalid {name} data\"\n        if val < low or val > high:\n            return \"CRITICAL\", f\"SAFETY: {name}={val} outside safe range\"\n    \n    reasons = []\n    if conscious <= 1: reasons.append(\"Unresponsive\")\n    if hr > 150 or hr < 40: reasons.append(f\"Critical HR: {hr}\")\n    if bp < 80: reasons.append(f\"Hypotension: {bp}\")\n    if temp > 104: reasons.append(f\"High fever: {temp}\")\n    \n    if reasons: return \"CRITICAL\", \"; \".join(reasons)\n    # ... continues with URGENT, STANDARD logic"},
+      gemini: {label:"Gemini's triage (find the gaps):", code:"# Gemini: Pattern-based with thresholds config\nTHRESHOLDS = {\n    \"CRITICAL\": {\"hr_high\": 150, \"bp_low\": 80, \"temp_high\": 104, \"conscious_low\": 1},\n    \"URGENT\": {\"hr_high\": 120, \"bp_low\": 90, \"temp_high\": 103, \"pain_high\": 8},\n    \"STANDARD\": {\"hr_high\": 100, \"temp_high\": 100, \"pain_high\": 5}\n}\n\ndef triage(hr, bp, temp, conscious, pain):\n    \"\"\"Triage using configurable thresholds.\"\"\"\n    # Check CRITICAL\n    c = THRESHOLDS[\"CRITICAL\"]\n    if (hr > c[\"hr_high\"] or bp < c[\"bp_low\"] or \n        temp > c[\"temp_high\"] or conscious <= c[\"conscious_low\"]):\n        return \"CRITICAL\", \"Vitals exceed critical thresholds\"\n    # Check URGENT...\n    # Gemini's approach: thresholds in config, easy to update\n    # But: what about COMBINATIONS of borderline values?"}
+    },
+    tasks: [
+      "Run ALL three triage functions",
+      "Test with HR=0 (patient dead): Which AI catches this? Which returns NON-URGENT for a dead patient?",
+      "Test with ALL None values: Which AI defaults to CRITICAL? Which crashes?",
+      "Test with a patient who has MULTIPLE borderline values (HR=119, BP=91, Pain=7): None are critical alone, but TOGETHER they are dangerous. Which AI catches this?",
+      "Test with negative values: Pain = -5, HR = -10. Which AI validates?",
+      "DOCUMENT all failures in a table: AI Model | Test Case | Expected | Actual | PASSED/FAILED",
+      "YOUR VERSION: Take the best safety logic from all three and build YOUR triage function"
+    ]
+  },
+
+  quiz: [
+    {q:"In the triage test, Claude defaulted to CRITICAL for missing data. GPT crashed. Gemini returned NON-URGENT. For a MEDICAL system, which behavior is correct?",opts:["GPT - crashing alerts the developer","Claude - when unsure in medicine, assume the worst","Gemini - NON-URGENT until proven otherwise","All are equally acceptable"],ans:1,exp:"In safety-critical systems, the SAFE default is always the most cautious. Missing data in a medical system should NEVER result in a low priority - it should trigger the highest alert. Claude's Constitutional AI training naturally produces this behavior."},
+    {q:"Gemini used a configuration dictionary for thresholds instead of hardcoded if/else. What is the advantage?",opts:["It looks more professional","Thresholds can be updated WITHOUT changing the code logic","It runs faster","There is no advantage"],ans:1,exp:"Configuration-driven decisions separate WHAT the rules are from HOW they are applied. If a hospital changes the critical heart rate from 150 to 140, you update one number, not multiple if statements. This is a real-world engineering pattern Gemini's training recognizes."},
+    {q:"When you tested all three AI models with BORDERLINE values that are only dangerous in COMBINATION, what typically happens?",opts:["All three catch it perfectly","Most AI miss it because they check each vital independently","Only Claude catches it","Only Gemini catches it"],ans:1,exp:"This is a classic AI weakness - most models check each vital independently. A patient with HR=119, BP=91, and Pain=7 might not trigger any SINGLE threshold but is clearly in trouble. This is where HUMAN judgment is irreplaceable. AI-First teaches you to find these gaps."},
+    {q:"After comparing triage code from all three AI companies, the most important thing you learned is:",opts:["Which AI to always use for medical code","That AI should never be used in healthcare","That different AI have different safety behaviors and YOU must evaluate which is appropriate","That all AI produce the same quality code"],ans:2,exp:"The AI-First insight: YOUR value is not writing the code, it is evaluating whether the AI's approach is safe enough for the situation. For medical systems, you need Claude-level caution. For a todo list, GPT-level directness is fine."}
+  ],
+  tryme: {
+  title: 'Try Me: Fitness Workout Recommender',
+  scenario: 'You&#39;re building a fitness app that recommends workouts based on user goals, available equipment, and fitness level. Ask each AI to create the decision logic (if/elif/else statements and conditionals) for a smart workout recommender. See how each AI structures complex branching logic differently.',
+  hints: {
+    role: 'Hint: You are a developer needing to implement conditional logic for workout recommendations.',
+    task: 'Hint: Ask each AI: "Write pseudocode for a function that recommends a workout given: user goal (weight loss/muscle/cardio), equipment available, and fitness level."',
+    context: 'Hint: Consider factors like beginners need simpler routines, some goals need cardio, muscle building needs resistance, and some equipment might be unavailable.',
+    exemplar: 'Hint: One AI might use nested if/elif chains, another might use a lookup table, another might prioritize readability over efficiency.',
+    format: 'Hint: Request pseudocode or Python-like conditional blocks showing the decision tree clearly.',
+    note: 'Hint: Notice how each AI handles conflicts (e.g., weight loss goal + limited equipment).'
+  },
+  steps: [
+    'Ask ChatGPT to write decision logic that recommends workouts based on goal, equipment, and fitness level.',
+    'Ask Claude for its conditional logic approach and compare the decision tree structure.',
+    'Ask Gemini how it would handle the same decision logic.',
+    'Compare: Which decision logic is easiest to follow? Which handles edge cases best?',
+    'Reflect: How did different AI approaches change the logic flow and readability?'
+  ]
+},
+},
+
+// ──────────── MODULE 5 ────────────
+{
+  title: "Module 5: Patterns - How AI Loops Differently",
+  subtitle: "Same repetition problem. Three styles. Which is most Pythonic?",
+  weeks: "Weeks 9-10",
+  overview: "Loops and patterns is where each AI's training shows its programming culture. GPT loves list comprehensions and one-liners. Claude writes explicit loops with clear variable names. Gemini may suggest generators or functional approaches. By comparing all three, you learn not just WHAT patterns exist, but WHEN to use which style.",
+
+  research: {
+    title: "Research: Pattern Implementation Styles Across AI",
+    content: `<p>When AI writes loops, their training data shapes their style:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT Loop Style</div>
+        <p><strong>Loves:</strong> List comprehensions, one-liners, compact expressions</p>
+        <p><strong>Typical:</strong> <code>results = [x*2 for x in data if x > 0]</code></p>
+        <p><strong>Pro:</strong> Concise, Pythonic</p>
+        <p><strong>Con:</strong> Hard to read for beginners, hard to debug</p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude Loop Style</div>
+        <p><strong>Loves:</strong> Explicit for loops with clear variable names and comments</p>
+        <p><strong>Typical:</strong> Multi-line loop with validation inside each iteration</p>
+        <p><strong>Pro:</strong> Readable, debuggable, safe</p>
+        <p><strong>Con:</strong> More verbose, slower for simple tasks</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini Loop Style</div>
+        <p><strong>Loves:</strong> Built-in functions (map, filter, enumerate), sometimes suggests pandas</p>
+        <p><strong>Typical:</strong> Functional-style: <code>list(filter(lambda x: x > 0, data))</code></p>
+        <p><strong>Pro:</strong> Leverages Python's standard library</p>
+        <p><strong>Con:</strong> Lambda functions confuse beginners</p>
+      </div>
+    </div>
+    <div class="insight think"><span class="insight-icon">&#128161;</span><span><strong>AI-First Learning:</strong> Instead of learning "here is how to write a for loop," you see THREE approaches and develop the judgment to know when each is appropriate. A list comprehension is great for simple transforms. An explicit loop is better when you need validation inside each step. Functional style is elegant when you are chaining operations.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: Weather Alert System - Pattern Showdown",
+    scenario: "Process a week of temperature data: find dangerous days, calculate averages, identify trends. The same task goes to all three AI companies across multiple model tiers.",
+    prompt: {
+      role: "You are a weather system developer who processes daily temperature data. Your code must handle sensor errors (missing data, impossible values like -500 or 999).",
+      task: "Write Python functions to: (1) clean bad data from a temperature list, (2) calculate daily average from hourly readings, (3) find all days above a danger threshold, (4) detect a trend of 3+ consecutive rising days, (5) generate a simple alert summary.",
+      context: "Data comes from outdoor sensors. Sensors sometimes malfunction and report -999 or 999 as error codes. Some hours have missing data (None). The system processes 7 days of 24 hourly readings each. Output goes to a non-technical city manager.",
+      exemplar: "Input: [[72,74,None,78,-999,80,...],[...]] (7 lists of 24 readings)\nCleaned: removes None and -999/999 values\nAverage day 1: 75.2\nDanger days (above 100): [Day 3, Day 5]\nTrend: Days 2-4 show rising temperatures\nAlert: WARNING - 2 danger days detected, rising trend observed",
+      format: "5 separate functions (SRP). Each handles ONE task. Include error handling for empty lists and all-bad-data days.",
+      note: "Show me three different Python styles for the same logic: (1) explicit for loops, (2) list comprehensions, (3) built-in functions like map/filter. I want to see the same result achieved three ways so I can learn when each style is appropriate."
+    },
+    steps: [
+      "Send to all 3 AI flagship models - note which style each prefers",
+      "Compare: Did GPT use comprehensions? Did Claude use explicit loops? Did Gemini use map/filter?",
+      "Test each with a list that is ALL bad data (all None or -999). Who handles it? Who crashes?",
+      "Send to cheap models (GPT-3.5, Haiku, Flash) - which patterns do they use? Simpler?",
+      "Run a SPEED test: Which approach runs fastest on large data?",
+      "Run a READABILITY test: Show each version to a non-coder. Which one makes most sense?",
+      "YOUR SYNTHESIS: Which pattern style do YOU prefer for which situation?"
+    ],
+    compare_note: "The learning is not about which AI is best - it is about understanding that different STYLES exist and each has tradeoffs. Speed vs readability vs safety."
+  },
+
+  lab: {
+    title: "Lab: Pattern Translation Challenge - Same Logic, Three Styles",
+    scenario: "Take the clean_data function and implement it in THREE different Python styles. Then test all three against the same bad data.",
+    codes: {
+      gpt: {label:"Style 1 - GPT's list comprehension:", code:"# ChatGPT style: compact one-liner\ndef clean_temps(readings):\n    return [r for r in readings if r is not None and -50 < r < 150]\n\n# One line. Elegant. But what if readings is None?\n# What if it returns empty list? No warning.\n\ndata = [72, None, 74, -999, 78, 999, 80, None, 76]\nprint(clean_temps(data))  # [72, 74, 78, 80, 76]\n# The -999 and 999 are removed because of the range check\n# But there is NO feedback about HOW MANY bad readings were removed"},
+      claude: {label:"Style 2 - Claude's explicit loop:", code:"# Claude style: explicit with validation and feedback\ndef clean_temps(readings):\n    \"\"\"ONE job: Remove invalid readings, report what was removed.\"\"\"\n    if readings is None:\n        return {\"clean\": [], \"removed\": 0, \"warning\": \"No data provided\"}\n    \n    clean = []\n    removed = 0\n    for reading in readings:\n        if reading is None:\n            removed += 1\n        elif not isinstance(reading, (int, float)):\n            removed += 1\n        elif reading < -50 or reading > 150:\n            removed += 1\n        else:\n            clean.append(reading)\n    \n    result = {\"clean\": clean, \"removed\": removed}\n    if removed > len(readings) * 0.5:\n        result[\"warning\"] = f\"Over 50% of data was invalid ({removed}/{len(readings)})\"\n    return result"},
+      gemini: {label:"Style 3 - Gemini's functional approach:", code:"# Gemini style: functional with built-ins\ndef is_valid_temp(reading):\n    \"\"\"Check if a temperature reading is valid.\"\"\"\n    return (reading is not None and \n            isinstance(reading, (int, float)) and \n            -50 < reading < 150)\n\ndef clean_temps(readings):\n    \"\"\"Filter readings using a validation function.\"\"\"\n    if not readings:\n        return []\n    valid = list(filter(is_valid_temp, readings))\n    invalid_count = len(readings) - len(valid)\n    if invalid_count:\n        print(f\"Note: Removed {invalid_count} invalid readings\")\n    return valid\n\n# Gemini separates the RULE (is_valid_temp) from the ACTION (filter)\n# This means you can reuse is_valid_temp elsewhere"}
+    },
+    tasks: [
+      "Run all three styles with: [72, None, 74, -999, 78, 'hot', 80, 999, 76]",
+      "Which one handles the string 'hot'? Which crashes?",
+      "Feed an EMPTY list []. Which returns gracefully? Which crashes?",
+      "Feed None (not an empty list, but actual None). Which crashes?",
+      "PERFORMANCE: Time each style with 1 million readings - which is fastest?",
+      "READABILITY: Which would a new team member understand quickest?",
+      "YOUR VERSION: Combine the best: Claude's safety + GPT's conciseness + Gemini's separation of concerns"
+    ]
+  },
+
+  quiz: [
+    {q:"GPT wrote: [r for r in data if r and -50<r<150]. This fails for one specific value. Which?",opts:["None","The number 0 (zero is a valid temperature!)","Negative numbers","Decimal numbers"],ans:1,exp:"In Python, 0 is falsy! The condition 'if r' filters out 0, which IS a valid temperature. This is a subtle bug that GPT's compact style hides. Claude's explicit isinstance() check would not have this problem. This is why READING AI code carefully matters."},
+    {q:"Claude's version returns a dictionary with 'removed' count and 'warning'. GPT just returns a list. For a weather alert system, which is better?",opts:["GPT because simpler is better","Claude because the system needs to know how much data was bad","They are the same","Gemini's approach is better than both"],ans:1,exp:"In a safety system, knowing that 80% of your sensor data was invalid is CRITICAL information. Just silently cleaning and returning good data hides the fact that your sensors might be broken. Claude's approach surfaces this information."},
+    {q:"Gemini separated the validation rule into its own function (is_valid_temp). Why is this useful?",opts:["It is not useful, it just adds complexity","The same validation can be reused in other functions without copying code","It runs faster","Gemini always does this"],ans:1,exp:"This is SRP applied to validation logic. If the valid temperature range changes from (-50,150) to (-60,160), you change ONE function and every place that uses it automatically gets the update. This is the DRY principle: Don't Repeat Yourself."},
+    {q:"You need to process 10 million temperature readings as fast as possible. Which style should you use?",opts:["Claude's explicit loop (most readable)","GPT's list comprehension (most Pythonic and optimized by Python internally)","Gemini's filter+lambda (functional style)","It does not matter, they are all the same speed"],ans:1,exp:"List comprehensions are optimized at the C level inside Python. They run significantly faster than explicit for loops for simple operations. For pure performance on large data, GPT's style wins. But for safety-critical code, Claude's style might be worth the speed cost."}
+  ],
+  tryme: {
+  title: 'Try Me: Text-Based Adventure Game',
+  scenario: 'You&#39;re creating a fun text-based adventure game with a game loop that handles room navigation, inventory management, and random encounters. Ask each AI how they would implement the core game loop and iteration patterns. See how different approaches to iteration emerge.',
+  hints: {
+    role: 'Hint: You are a game developer designing the main game loop structure.',
+    task: 'Hint: Ask each AI: "Design a text adventure game loop. Show me how you&#39;d handle: player input, room changes, inventory updates, and encounter encounters that repeat."',
+    context: 'Hint: The game needs a while loop for continuous play, inner loops for inventory/encounters, and clean exit conditions.',
+    exemplar: 'Hint: One AI might use nested while loops, another might use for loops with functions, another might suggest a state machine pattern.',
+    format: 'Hint: Request pseudocode showing the loop structure, what repeats, and how iteration controls the game flow.',
+    note: 'Hint: Look for differences in how each AI manages infinite loops, player turns, and game state updates.'
+  },
+  steps: [
+    'Ask ChatGPT to design the game loop structure for a text adventure with repeating player actions.',
+    'Ask Claude how it would implement iteration patterns for the same game.',
+    'Ask Gemini for its game loop design and notice different looping strategies.',
+    'Compare: Which loop structure is clearest? Which handles turns and state best?',
+    'Reflect: How did each AI use iteration differently to control the game flow?'
+  ]
+},
+},
+
+// ──────────── MODULE 6 ────────────
+{
+  title: "Module 6: Functions - AI as Co-Architect",
+  subtitle: "You design the blueprint. Three AI companies build it. Judge the results.",
+  weeks: "Weeks 11-12",
+  overview: "In AI-First function design, YOU write the function signatures (name, parameters, return type, ONE job description). Then you send those signatures to all three AI companies and compare the implementations. This is the architecture pattern of the future: humans design, AI implements, humans evaluate.",
+
+  research: {
+    title: "Research: Function Implementation Philosophies Across AI",
+    content: `<p>When three AI companies implement the SAME function signature, their code reveals fundamentally different philosophies:</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT Implementation</div>
+        <p><strong>Motto:</strong> "Get it done efficiently."</p>
+        <p>Minimal code. Trusts inputs. Returns direct values. Uses Python tricks and idioms.</p>
+        <p><strong>Typical:</strong> 5-10 lines per function. Clean but assumes happy path.</p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude Implementation</div>
+        <p><strong>Motto:</strong> "Be safe and explain everything."</p>
+        <p>Validates inputs first. Returns structured responses with success/failure. Adds docstrings with examples.</p>
+        <p><strong>Typical:</strong> 15-25 lines per function. Thorough but verbose.</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini Implementation</div>
+        <p><strong>Motto:</strong> "Follow established patterns."</p>
+        <p>May suggest type hints. References Python conventions. Adds logging. Structures for testability.</p>
+        <p><strong>Typical:</strong> 10-15 lines per function. Balanced with real-world touches.</p>
+      </div>
+    </div>
+    <div class="insight think"><span class="insight-icon">&#128161;</span><span><strong>The AI-First Function Pattern:</strong> (1) YOU write the signature + ONE job description. (2) Send to 3 AI companies. (3) Compare implementations. (4) Combine best parts. (5) Test with edge cases. (6) YOUR version is better than any single AI because you have three expert perspectives.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: Restaurant Order System - You Architect, AI Builds",
+    scenario: "You design the function signatures for a restaurant ordering system. Then send IDENTICAL signatures to all three AI and compare how each implements them.",
+    prompt: {
+      role: "You are a senior Python developer. I will give you function signatures. Implement EXACTLY what I describe - no more, no less. Follow the Single Responsibility Principle.",
+      task: "Implement these 5 functions:\n1. get_menu_item(menu, item_name) -> dict or None. ONE job: look up an item.\n2. calculate_subtotal(order_items) -> float. ONE job: sum all prices.\n3. apply_discount(subtotal, discount_percent) -> float. ONE job: reduce price.\n4. calculate_tax(amount, tax_rate=0.085) -> float. ONE job: compute tax.\n5. format_receipt(order_items, subtotal, discount, tax, total) -> str. ONE job: make readable receipt.",
+      context: "Restaurant with 20 menu items. Staff enter orders on a tablet. Receipt prints on thermal paper (max 40 characters wide). Discount can be 0-100%. Tax rate varies by state.",
+      exemplar: "def calculate_subtotal(order_items):\n    # order_items = [{'name':'Burger','price':9.99,'qty':2}, ...]\n    # Returns: 19.98\n    # Edge case: empty order returns 0.0\n    # Edge case: item with no price key raises clear error",
+      format: "Each function with: docstring, input validation, the core logic, return value. Include 3 test cases per function.",
+      note: "I want to compare how GPT, Claude, and Gemini implement the EXACT same signatures differently. Keep implementations independent - do not combine functions."
+    },
+    steps: [
+      "Write YOUR function signatures first (names, parameters, return types, ONE job each)",
+      "Send the IDENTICAL prompt to GPT-4o, Sonnet, Gemini Pro",
+      "Compare calculate_subtotal: How does each handle an empty list? An item with no price?",
+      "Compare format_receipt: Who respects the 40-character width limit? Who ignores it?",
+      "Compare apply_discount: What happens with discount=150%? Who validates?",
+      "Line count comparison: GPT vs Claude vs Gemini - who wrote more? Why?",
+      "Send to cheap models (GPT-3.5, Haiku, Flash) - count how many validations disappear",
+      "SYNTHESIZE: Build YOUR implementation using best ideas from all three"
+    ],
+    compare_note: "This exercise proves the AI-First value proposition: three expert implementations in minutes, YOUR job is evaluation and synthesis, not typing."
+  },
+
+  lab: {
+    title: "Lab: Function Implementation Showdown",
+    scenario: "Compare actual calculate_subtotal implementations from all three AI. Test them to destruction.",
+    codes: {
+      gpt: {label:"GPT's calculate_subtotal:", code:"def calculate_subtotal(order_items):\n    return sum(item['price'] * item['qty'] for item in order_items)\n\n# Clean. Pythonic. One line.\n# But what happens with:\n# calculate_subtotal([])  # Returns 0 - OK\n# calculate_subtotal([{'name':'Burger'}])  # KeyError: 'price' - CRASH!\n# calculate_subtotal(None)  # TypeError - CRASH!\n# calculate_subtotal([{'price':'free','qty':1}])  # TypeError - CRASH!"},
+      claude: {label:"Claude's calculate_subtotal:", code:"def calculate_subtotal(order_items):\n    \"\"\"ONE job: Calculate the total price of all ordered items.\"\"\"\n    if not order_items:\n        return 0.0\n    \n    total = 0.0\n    for item in order_items:\n        if 'price' not in item:\n            raise ValueError(f\"Item '{item.get('name','unknown')}' has no price\")\n        if 'qty' not in item:\n            raise ValueError(f\"Item '{item.get('name','unknown')}' has no quantity\")\n        \n        price = item['price']\n        qty = item['qty']\n        \n        if not isinstance(price, (int, float)) or price < 0:\n            raise ValueError(f\"Invalid price: {price}\")\n        if not isinstance(qty, (int, float)) or qty <= 0:\n            raise ValueError(f\"Invalid quantity: {qty}\")\n        \n        total += price * qty\n    \n    return round(total, 2)  # Avoids floating point display issues"},
+      gemini: {label:"Gemini's calculate_subtotal:", code:"from typing import List, Dict, Union\n\ndef calculate_subtotal(order_items: List[Dict[str, Union[str, float, int]]]) -> float:\n    \"\"\"Calculate subtotal from order items.\n    \n    Args:\n        order_items: List of dicts with 'name', 'price', 'qty' keys.\n    Returns:\n        Subtotal as float, rounded to 2 decimal places.\n    Raises:\n        ValueError: If any item is missing required fields.\n    \"\"\"\n    if not order_items:\n        return 0.0\n    \n    subtotal = 0.0\n    for item in order_items:\n        try:\n            subtotal += float(item['price']) * int(item['qty'])\n        except (KeyError, ValueError, TypeError) as e:\n            raise ValueError(f\"Invalid item {item}: {e}\")\n    \n    return round(subtotal, 2)\n# Gemini adds type hints and tries to CONVERT types"}
+    },
+    tasks: [
+      "Run all three with valid data: [{'name':'Burger','price':9.99,'qty':2}]",
+      "Feed empty list [] to all three. Who returns 0.0? Who crashes?",
+      "Feed None to all three. Who handles it? Who crashes?",
+      "Feed [{'name':'Burger'}] (missing price). Who gives helpful error? Who gives KeyError?",
+      "Feed [{'price':'free','qty':1}] (string price). GPT crashes. Gemini tries to convert. Claude rejects. Which is correct?",
+      "Feed [{'price':-5,'qty':1}] (negative price). Who catches this? A negative price is a BUG.",
+      "SCORING: Rate each on a 1-5 scale for: correctness, safety, readability, helpfulness of errors",
+      "YOUR VERSION: Best error handling + best readability + best type handling"
+    ]
+  },
+
+  quiz: [
+    {q:"GPT's one-liner sum(item['price']*item['qty'] for item in items) is elegant but dangerous. Why?",opts:["It runs too slowly","It crashes immediately on ANY malformed data with an unhelpful error","It always returns wrong results","There is nothing wrong with it"],ans:1,exp:"A generator expression with dictionary access gives KeyError (not ValueError with context) if price or qty is missing. In production, this means a cryptic error log instead of a helpful message. Elegant code is not always safe code."},
+    {q:"Claude raises ValueError with the item name in the message. Gemini uses try/except to catch multiple error types. Which approach is better for debugging?",opts:["Claude because the error message tells you EXACTLY which item is broken","Gemini because try/except is more Pythonic","They are the same","Neither - you should never have errors"],ans:0,exp:"When you have 50 items in an order and one has bad data, Claude's approach tells you 'Item Burger has no price.' Gemini's approach tells you 'Invalid item: KeyError price.' The first helps you fix the problem in seconds."},
+    {q:"In the AI-First function pattern, what is YOUR job vs the AI's job?",opts:["You write all the code, AI reviews it","AI writes all the code, you just run it","You design the architecture (signatures, responsibilities), AI implements, you evaluate","There is no difference in roles"],ans:2,exp:"AI-First means: Human = Architect + Evaluator. AI = Implementer. You define WHAT each function does and its ONE responsibility. AI writes the code. You evaluate whether the code meets your design. This is the future of software engineering."},
+    {q:"Why do we send the SAME function signature to THREE different AI companies?",opts:["To find the cheapest one","Because we cannot decide which to use","To get three expert perspectives, identify gaps, and synthesize the best solution","To waste time"],ans:2,exp:"Three perspectives reveal blind spots no single AI would catch. GPT might miss validation. Claude might over-engineer. Gemini might suggest patterns you had not considered. YOUR synthesis of all three creates something better than any one alone."}
+  ],
+  tryme: {
+  title: 'Try Me: Recipe Scaling Calculator',
+  scenario: 'You&#39;re building a recipe scaling app that lets cooks adjust ingredient quantities, convert units, and recalculate nutrition. Ask each AI to design modular functions that are reusable and maintainable. See how differently they architect the function structure.',
+  hints: {
+    role: 'Hint: You are designing a function-based system with reusable components.',
+    task: 'Hint: Ask each AI: "Design functions for a recipe scaler. I need: unit conversion, ingredient scaling, serving adjustment, and nutrition recalculation. Show me the functions and how they work together."',
+    context: 'Hint: Think about recipes with grams, cups, tablespoons, servings from 2 to 20 people, and nutritional data that scales.',
+    exemplar: 'Hint: One AI might create separate functions per task, another might nest them, another might design a Recipe class with methods.',
+    format: 'Hint: Request Python function signatures with clear inputs/outputs and brief descriptions of how they connect.',
+    note: 'Hint: Evaluate which design is most modular—could you reuse these functions in other apps?'
+  },
+  steps: [
+    'Ask ChatGPT to design modular functions for unit conversion, scaling, and nutrition recalculation.',
+    'Ask Claude for its function architecture and compare modularity and reusability.',
+    'Ask Gemini how it would structure the same functions.',
+    'Compare: Which function design is most reusable? Which is easiest to maintain?',
+    'Reflect: How did each AI decide what should be a separate function versus combined?'
+  ]
+},
+},
+
+// ──────────── MODULE 7 ────────────
+{
+  title: "Module 7: Prompt Engineering Mastery",
+  subtitle: "The 6-layer architecture tested across every AI model.",
+  weeks: "Weeks 13-14",
+  overview: "This is where everything comes together. You have been using the 6-layer prompting architecture (ROLE, TASK, CONTEXT, EXEMPLAR, FORMAT, NOTE) in every module. Now you master it by testing BAD vs GOOD prompts across ALL models and ALL tiers. You will prove to yourself that the SAME model gives completely different code based on HOW you prompt it.",
+
+  research: {
+    title: "Research: Why Prompt Architecture Is Not Optional",
+    content: `<p>Every module has shown you that different AI give different results. But here is the thing most people miss: <strong>the same AI also gives WILDLY different results based on your prompt.</strong></p>
+    <p>The 6-layer prompting architecture is not a suggestion. It is a proven framework that controls the quality of AI output:</p>
+    <div class="prompt-tmpl">
+      <div class="prompt-layer"><span class="prompt-label l-r">ROLE</span><span>Sets the AI's expertise, personality, and quality standard. HIGHEST IMPACT.</span></div>
+      <div class="prompt-layer"><span class="prompt-label l-t">TASK</span><span>Defines exactly what to build. Eliminates ambiguity. Lists specific functions/components.</span></div>
+      <div class="prompt-layer"><span class="prompt-label l-c">CONTEXT</span><span>Gives background: who uses this, what system it integrates with, technical constraints.</span></div>
+      <div class="prompt-layer"><span class="prompt-label l-e">EXEMPLAR</span><span>Shows what GOOD output looks like. One example shapes the entire response.</span></div>
+      <div class="prompt-layer"><span class="prompt-label l-f">FORMAT</span><span>Specifies docstrings, tests, comments, structure. Controls organization.</span></div>
+      <div class="prompt-layer"><span class="prompt-label l-n">NOTE</span><span>Sets constraints: no libraries, handle edge cases, explain WHY not just WHAT.</span></div>
+    </div>
+    <h4>The Experiment That Proves It:</h4>
+    <p>Send a BAD prompt ("write a calculator in Python") and a GOOD 6-layer prompt to all 9 models (3 companies x 3 tiers). You will get 18 different outputs. The best BAD-prompt output will still be worse than the worst GOOD-prompt output. That is the power of prompt architecture.</p>
+    <div class="insight key"><span class="insight-icon">&#9888;</span><span><strong>The Multiplier Effect:</strong> Good prompt + Good model = Excellent code. Bad prompt + Good model = Mediocre code. Good prompt + Bad model = Decent code. Bad prompt + Bad model = Garbage. The prompt matters MORE than the model choice.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: The 18-Model Experiment",
+    scenario: "Send the SAME bad prompt and the SAME good prompt to all 9 models (3 companies x 3 tiers). Score every response. Prove that prompt quality beats model quality.",
+    prompt: {
+      role: "You are a prompt engineering researcher comparing AI model responses. You score outputs on: correctness, SRP compliance, error handling, readability, and safety.",
+      task: "Score 18 code outputs (9 from BAD prompt, 9 from GOOD prompt) on a 1-10 scale for each criterion. Create a comparison matrix.",
+      context: "The task is building a calculator backend in Python. BAD prompt: 'Write me a calculator in Python.' GOOD prompt: full 6-layer architecture specifying 8 SRP functions, validation, error handling, docstrings, and test cases.",
+      exemplar: "Scoring example:\nGPT-4o + BAD prompt: Correctness=7, SRP=2, Errors=3, Readability=6, Safety=3 = Total 21/50\nGPT-4o + GOOD prompt: Correctness=9, SRP=9, Errors=8, Readability=9, Safety=8 = Total 43/50",
+      format: "A table with rows for each of the 9 models and columns for BAD prompt score vs GOOD prompt score, with the DIFFERENCE highlighted.",
+      note: "The point is to prove that the PROMPT matters more than the MODEL. Even GPT-3.5 with a good prompt should outperform GPT-4o with a bad prompt on SRP and error handling."
+    },
+    steps: [
+      "BAD PROMPT: Send 'Write me a calculator in Python' to all 9 models",
+      "GOOD PROMPT: Send the full 6-layer calculator prompt (from calculator_spec.md Section 7A) to all 9 models",
+      "Score each output 1-10 on: Correctness, SRP, Error Handling, Readability, Safety",
+      "Create a comparison table: 9 models x 2 prompts x 5 criteria",
+      "FIND: Which cheap model + good prompt beat which flagship model + bad prompt?",
+      "FIND: Which criterion showed the BIGGEST improvement from bad to good prompt?",
+      "FIND: Did any model give basically the same output regardless of prompt quality?",
+      "CONCLUSION: Write a 1-paragraph summary of what you learned about prompt vs model quality"
+    ],
+    compare_note: "Expected result: Every model improves 50-100% with the good prompt. SRP and Error Handling show the biggest jumps. GPT-3.5 + good prompt often beats GPT-4o + bad prompt on structure."
+  },
+
+  lab: {
+    title: "Lab: Build a Prompt Quality Analyzer",
+    scenario: "Create a Python tool that helps you evaluate and compare prompt quality across models. This is meta-learning: using AI to learn about AI.",
+    codes: {
+      gpt: {label:"GPT's approach to scoring:", code:"# GPT: Direct scoring dictionary\ndef score_output(code_str):\n    score = {\"srp\": 0, \"errors\": 0, \"docs\": 0, \"tests\": 0}\n    \n    funcs = code_str.count('def ')\n    score[\"srp\"] = min(funcs, 10)  # More functions = more SRP\n    \n    if 'try' in code_str or 'except' in code_str:\n        score[\"errors\"] = 5\n    if 'if' in code_str and 'None' in code_str:\n        score[\"errors\"] += 3\n    \n    score[\"docs\"] = code_str.count('\"\"\"') // 2  # Pairs of triple quotes\n    score[\"tests\"] = code_str.count('assert')\n    \n    return score"},
+      claude: {label:"Claude's approach to scoring:", code:"def score_output(code_str, criteria=None):\n    \"\"\"ONE job: Score AI code output on quality criteria.\"\"\"\n    if not code_str or not isinstance(code_str, str):\n        return {\"error\": \"No code to analyze\", \"total\": 0}\n    \n    scores = {\n        \"srp\": _score_srp(code_str),\n        \"error_handling\": _score_error_handling(code_str),\n        \"documentation\": _score_documentation(code_str),\n        \"testing\": _score_testing(code_str),\n        \"readability\": _score_readability(code_str)\n    }\n    scores[\"total\"] = sum(scores.values())\n    scores[\"grade\"] = \"A\" if scores[\"total\"] > 40 else \"B\" if scores[\"total\"] > 30 else \"C\" if scores[\"total\"] > 20 else \"F\"\n    return scores\n\ndef _score_srp(code):\n    \"\"\"Score how well code follows Single Responsibility.\"\"\"\n    func_count = code.count('def ')\n    # Ideal: 6-10 focused functions\n    if 6 <= func_count <= 10: return 10\n    if 3 <= func_count < 6: return 6\n    return 3"},
+      gemini: {label:"Gemini's approach to scoring:", code:"import re\nfrom typing import Dict, Any\n\ndef score_output(code_str: str) -> Dict[str, Any]:\n    \"\"\"Analyze code quality using regex patterns.\"\"\"\n    analysis = {\n        \"functions\": len(re.findall(r'def \\w+', code_str)),\n        \"docstrings\": len(re.findall(r'\"\"\".*?\"\"\"', code_str, re.DOTALL)),\n        \"try_except\": len(re.findall(r'try:', code_str)),\n        \"type_checks\": len(re.findall(r'isinstance', code_str)),\n        \"assertions\": len(re.findall(r'assert ', code_str)),\n        \"comments\": len(re.findall(r'#.*', code_str)),\n        \"total_lines\": len(code_str.splitlines()),\n        \"blank_lines\": code_str.count('\\n\\n')\n    }\n    # Gemini provides raw metrics, lets YOU interpret\n    analysis[\"readability_ratio\"] = round(\n        (analysis[\"comments\"] + analysis[\"docstrings\"]) / \n        max(analysis[\"total_lines\"], 1), 2\n    )\n    return analysis"}
+    },
+    tasks: [
+      "Get the scoring code from all three AI and combine the best parts",
+      "Use YOUR scorer to analyze the BAD prompt outputs from the Activity",
+      "Use YOUR scorer to analyze the GOOD prompt outputs from the Activity",
+      "Create a visualization: BAD vs GOOD scores for each model (simple print chart)",
+      "IDENTIFY: Which model improved the MOST with good prompting?",
+      "IDENTIFY: Which model improved the LEAST? Why might that be?",
+      "META-LEARNING: You just used AI to build a tool to evaluate AI. Write down what that taught you."
+    ]
+  },
+
+  quiz: [
+    {q:"You found that GPT-3.5 with a good prompt scored 38/50, while GPT-4o with a bad prompt scored 25/50. What does this prove?",opts:["GPT-3.5 is better than GPT-4o","The bad prompt was unfair","Prompt quality can matter MORE than model quality","This result is impossible"],ans:2,exp:"This is the core lesson of prompt engineering: a well-structured prompt elevates even a cheaper model above what a flagship model produces with a lazy prompt. YOUR prompting skill is a multiplier on AI capability."},
+    {q:"Which layer of the 6-layer architecture had the BIGGEST impact on code quality in your experiments?",opts:["NOTE (constraints)","FORMAT (structure)","ROLE (expertise persona)","EXEMPLAR (example output)"],ans:2,exp:"ROLE consistently has the highest impact because it shapes the AI's entire approach. Saying 'You are a senior developer who follows SRP' changes EVERYTHING - function count, naming, error handling, documentation style. The other layers refine, but ROLE transforms."},
+    {q:"Claude's scorer returned a 'grade' letter. GPT's returned raw numbers. Gemini's returned ratio metrics. For a student learning prompt engineering, which is most useful?",opts:["GPT's raw numbers because they are precise","Claude's letter grade because it is simple and actionable","Gemini's ratios because they are more analytical","Combine all three for the most complete picture"],ans:3,exp:"Raw numbers show what was found. Letter grades give quick feedback. Ratios show proportional quality. A student benefits most from seeing ALL three perspectives - which is exactly the AI-First philosophy: multiple viewpoints create deeper understanding."},
+    {q:"If the prompt matters more than the model, why do we still compare across 3 AI companies?",opts:["Because we need to waste money on all three","Because each company's training STILL creates different strengths even with identical prompts","Marketing requires it","There is no good reason"],ans:1,exp:"Even with perfect prompts, Constitutional AI (Claude) will still add more safety checks than RLHF (GPT). Multimodal training (Gemini) will still reference real-world patterns. The prompt controls the QUALITY FLOOR, but the training shapes the CHARACTER of the output."}
+  ],
+  tryme: {
+  title: 'Try Me: Study Planner AI Assistant',
+  scenario: 'You&#39;re building a study assistant that creates personalized study schedules using AI. Use the full RTCEFN 6-layer prompting framework to craft a powerful prompt that generates study plans based on exam dates, subjects, and your learning style. See how structured prompting produces better results.',
+  hints: {
+    role: 'Hint: Define your role: "You are an expert educational coach who creates customized study schedules."',
+    task: 'Hint: Be specific: "Generate a day-by-day study plan for [exam date] covering [subjects], accounting for my [learning style]."',
+    context: 'Hint: Provide details: number of weeks until exam, current knowledge level, hours available per day, preferred study formats.',
+    exemplar: 'Hint: Show an example: "For a student with 4 weeks before calculus, here&#39;s a sample week emphasizing active practice problems."',
+    format: 'Hint: Request specific output: "Format as a table with dates, topics, activities, and break times."',
+    note: 'Hint: Add constraints: "Avoid overwhelming the schedule, include review days, suggest healthy study breaks."'
+  },
+  steps: [
+    'Craft a Role statement defining yourself as a learner with specific goals and constraints.',
+    'Write the Task: request a detailed study schedule with specific exam date, subjects, and learning style preferences.',
+    'Add Context: explain your current knowledge, available study hours, and learning environment.',
+    'Provide an Exemplar: show a sample day or week of the schedule you want created.',
+    'Specify Format and Note: request specific structure and add constraints about pacing, review, and wellness.'
+  ]
+},
+},
+
+// ──────────── MODULE 8 ────────────
+{
+  title: "Module 8: Capstone - AI-First Calculator",
+  subtitle: "Spec in Markdown. Build with 3 AI. Ship with YOUR judgment.",
+  weeks: "Weeks 15-16",
+  overview: "The capstone project is a Basic Calculator with an HTML front end. But in the AI-First approach, you do not just build it with one AI. You write the specification in Markdown FIRST (the THINKING), then send each component to ALL three AI companies, compare implementations, and synthesize the best parts into YOUR final product. Every function gets built THREE ways. YOU choose which is best.",
+
+  research: {
+    title: "Research: AI-First Development Lifecycle",
+    content: `<p>The AI-First development lifecycle is fundamentally different from traditional development:</p>
+    <h4>Traditional (AI Bolted-On):</h4>
+    <p>Learn concept -> Practice yourself -> Get stuck -> Ask AI for help -> Copy-paste -> Hope it works</p>
+    <h4>AI-First:</h4>
+    <p>Define the problem -> Write specification -> Send to 3 AI companies -> Compare 3 implementations -> Evaluate quality -> Synthesize best parts -> Test by breaking -> Ship YOUR version</p>
+    <div class="ai-compare">
+      <div class="ai-card gpt">
+        <div class="ai-head">&#9679; ChatGPT for the Calculator</div>
+        <p><strong>Expect:</strong> Clean, compact code. Minimal validation. Works fast for happy path. May use Python tricks.</p>
+        <p><strong>Best for:</strong> The core math functions (add, subtract, multiply, divide) where correctness is straightforward.</p>
+      </div>
+      <div class="ai-card claude">
+        <div class="ai-head">&#9679; Claude for the Calculator</div>
+        <p><strong>Expect:</strong> Heavy validation. Success/failure dictionaries. Thorough docstrings. Safety-first divide by zero handling.</p>
+        <p><strong>Best for:</strong> validate_input(), error handling, the specification review.</p>
+      </div>
+      <div class="ai-card gem">
+        <div class="ai-head">&#9679; Gemini for the Calculator</div>
+        <p><strong>Expect:</strong> Type hints. May suggest a class-based approach. Could reference HTML/JS interaction patterns.</p>
+        <p><strong>Best for:</strong> The HTML front end, the CSS styling, connecting HTML to Python.</p>
+      </div>
+    </div>
+    <div class="insight key"><span class="insight-icon">&#9888;</span><span><strong>The AI-First Capstone Rule:</strong> Every function must be implemented by ALL three AI companies. YOU evaluate, compare, and choose. Your final calculator is a synthesis of the best code from three expert perspectives. This is how real engineering teams will work in the AI era.</span></div>`
+  },
+
+  activity: {
+    title: "Activity: Write the Calculator Specification (Markdown)",
+    scenario: "Before ANY AI writes ANY code, YOU write the complete specification. This is the THINKING deliverable. The specification is the real project. The code is just the translation.",
+    prompt: {
+      role: "You are a software architect reviewing a calculator specification document. You are STRICT - if something is not in the spec, it cannot be built. Ask probing questions about every detail I might have missed.",
+      task: "Review my calculator specification and challenge me on: (1) Are all operations defined with edge cases? (2) Is the data flow from button click to display complete? (3) Are ALL error cases listed? (4) Is each function truly single-responsibility? (5) Would a developer who never talked to me be able to build this from the spec alone?",
+      context: "Basic calculator with HTML front end and Python backend. Operations: +, -, *, /. Buttons: 0-9, decimal, equals, clear. Display shows current number and results. Must handle divide by zero, invalid input, decimal precision.",
+      exemplar: "Spec review comment: 'Your divide function spec says it handles zero, but what about dividing zero BY a number? 0/5 = 0 is valid but your spec does not mention it. Also, what about very small results like 1/3 = 0.333...? How many decimal places?'",
+      format: "A list of questions and gaps I need to address in my specification before any AI writes any code.",
+      note: "Be ruthless. Real architects reject specifications that are not complete. Every gap in the spec becomes a bug in the code. Find at least 10 things I probably forgot."
+    },
+    steps: [
+      "Write your calculator_spec.md FIRST (use the template from the course materials)",
+      "Send your spec to GPT-4o for review - what gaps does it find?",
+      "Send the SAME spec to Claude Sonnet - what DIFFERENT gaps does it find?",
+      "Send the SAME spec to Gemini Pro - what DIFFERENT gaps does it find?",
+      "COMPARE: Did all three AI find the same issues? What did each one uniquely catch?",
+      "UPDATE your spec based on ALL three reviews",
+      "Send the UPDATED spec to all three again - are there still gaps?",
+      "YOUR SPEC is now better than what any single AI could produce because three experts reviewed it"
+    ],
+    compare_note: "This exercise demonstrates AI-First at its core: humans create the vision (spec), AI provides expert review from multiple perspectives, humans synthesize and improve."
+  },
+
+  lab: {
+    title: "Lab: Build the Calculator Three Ways, Ship the Best",
+    scenario: "Send your approved spec to all three AI companies. Get three complete calculator implementations. Compare every function. Build YOUR version from the best of each.",
+    codes: {
+      gpt: {label:"GPT's divide() - compact:", code:"def divide(a, b):\n    if b == 0:\n        return None  # Caller handles display\n    return a / b\n\n# 3 lines. Clean. But:\n# - Returns None (caller might not check!)\n# - No type validation\n# - No rounding for display\n# GPT trusts the caller to do the right thing"},
+      claude: {label:"Claude's divide() - safe:", code:"def divide(a, b):\n    \"\"\"ONE job: divide a by b safely.\n    \n    Returns dict with 'success' and 'value' or 'error'.\n    This ensures the caller ALWAYS knows what happened.\n    \"\"\"\n    if not isinstance(a, (int, float)):\n        return {\"success\": False, \"error\": \"First number is not valid\"}\n    if not isinstance(b, (int, float)):\n        return {\"success\": False, \"error\": \"Second number is not valid\"}\n    if b == 0:\n        return {\"success\": False, \"error\": \"Cannot divide by zero\"}\n    \n    result = a / b\n    return {\"success\": True, \"value\": round(result, 10)}\n\n# 12 lines. Safe. Clear. But:\n# - More verbose\n# - Caller must check success/failure dict\n# Claude never trusts the input"},
+      gemini: {label:"Gemini's divide() - typed:", code:"from typing import Union\n\ndef divide(a: float, b: float) -> Union[float, str]:\n    \"\"\"Divide a by b with error handling.\n    \n    Args:\n        a: Dividend (number to be divided)\n        b: Divisor (number to divide by)\n    Returns:\n        Result as float, or error message as string\n    \"\"\"\n    try:\n        a, b = float(a), float(b)\n    except (TypeError, ValueError):\n        return \"Error: Invalid number input\"\n    \n    if b == 0:\n        return \"Error: Cannot divide by zero\"\n    \n    return round(a / b, 10)\n\n# Gemini tries to CONVERT inputs (float(a))\n# Uses type hints\n# Returns mixed types (float or string) - is this good?"}
+    },
+    tasks: [
+      "FIRST: Finalize your calculator_spec.md - the spec MUST be done before code",
+      "Send the full spec to all 3 AI flagship models. Get 3 complete implementations.",
+      "Compare EVERY function across all 3 implementations. Make a scoring table.",
+      "For divide(): GPT returns None, Claude returns dict, Gemini returns mixed type. Which is safest?",
+      "For validate_input(): Which AI added the most thorough checking?",
+      "For format_result(): Which AI handled floating point precision best?",
+      "Build YOUR final calculator by choosing the BEST function from each AI",
+      "Build the HTML front end - send to all 3 AI, pick the best-looking one",
+      "BREAK TEST: Give your calculator to a classmate. Document every failure.",
+      "Write ethical analysis: Which AI company was best for which part? Why?"
+    ]
+  },
+
+  quiz: [
+    {q:"In the AI-First capstone, what is YOUR primary deliverable?",opts:["Working Python code","The Markdown specification + YOUR synthesis of three AI implementations","Just the HTML front end","The AI prompt log"],ans:1,exp:"The spec demonstrates your THINKING (architecture, decomposition, error handling strategy). The synthesis demonstrates your JUDGMENT (evaluating and combining three expert perspectives). The code is just the output of your thinking and judgment."},
+    {q:"GPT's divide returns None. Claude's returns a dict. Gemini's returns a string or float. For a calculator UI, which approach creates the LEAST bugs?",opts:["GPT's None - simple and clean","Claude's dict - the caller always knows success or failure","Gemini's mixed return - flexible","All three are equally safe"],ans:1,exp:"Claude's dictionary pattern forces the caller to check success/failure EVERY time. With GPT's None, a caller might forget to check and display 'None' on the calculator. With Gemini's mixed type, you need isinstance() checks everywhere. Claude's pattern makes the SAFE path the EASY path."},
+    {q:"You built your calculator using: Claude's validation, GPT's math functions, Gemini's HTML. This is called:",opts:["Cheating","AI-First Synthesis - combining the best of multiple expert perspectives","Being indecisive","Bad engineering practice"],ans:1,exp:"This IS the AI-First skill. No single AI is best at everything. Claude excels at safety. GPT excels at concise computation. Gemini excels at multi-format output. YOUR engineering value is knowing which tool to use for which job - just like a carpenter choosing between hammer, drill, and saw."},
+    {q:"After completing all 8 modules with the AI-First approach, the MOST important skill you developed is:",opts:["Writing Python code","Memorizing AI model names","Evaluating, comparing, and synthesizing AI outputs using human judgment","Prompting one specific AI model really well"],ans:2,exp:"The AI-First approach trains you to be an EVALUATOR and SYNTHESIZER. You can compare expert outputs, identify strengths and weaknesses, and create something better than any single source. This skill applies to ANY AI, ANY language, ANY domain. The models will change - your judgment skill will not."}
+  ],
+  tryme: {
+  title: 'Try Me: Personal Finance Dashboard',
+  scenario: 'You&#39;re creating a comprehensive personal finance dashboard that tracks income, expenses, savings, investments, and financial goals. Build a complete spec in Markdown, submit it to all 3 AI partners, and compare their implementations. Synthesize the best code from each into your final application.',
+  hints: {
+    role: 'Hint: You are the project lead defining requirements, architecture, and success criteria.',
+    task: 'Hint: Create a Markdown spec including: features (budget tracking, goal setting, expense categories), data structures, functions needed, and UI layout.',
+    context: 'Hint: Include realistic requirements: monthly/yearly reporting, category breakdowns, savings goals, investment tracking, currency support.',
+    exemplar: 'Hint: Show example outputs: a sample monthly report, category pie chart concept, and goal progress visualization.',
+    format: 'Hint: Request Python code with clear function names, docstrings, and working examples.',
+    note: 'Hint: When you get responses from all 3 AIs, evaluate which has the best data structure, clearest functions, and most maintainable code.'
+  },
+  steps: [
+    'Write a comprehensive Markdown spec for a personal finance dashboard with features, requirements, and example outputs.',
+    'Submit your spec to ChatGPT and ask for a complete Python implementation.',
+    'Submit the same spec to Claude and compare its code structure and approach.',
+    'Submit to Gemini and evaluate its implementation strategy.',
+    'Synthesize: Combine the best data structures from one AI, the best functions from another, and the clearest code style from the third into your final application.'
+  ]
+},
+}
+
+]; // END MODULES
+
+// ============================================================
+// RENDERING ENGINE
+// ============================================================
+// Build sidebar
+const modList = document.getElementById('mod-list');
+modules.forEach((m,i) => {
+  const div = document.createElement('div');
+  div.className = 'mod-item' + (i===0?' active':'');
+  div.onclick = () => showModule(i);
+  div.innerHTML = '<div class="mod-num">'+(i+1)+'</div><div class="mod-title">'+m.title.replace(/Module \d+: /,'')+'</div>';
+  modList.appendChild(div);
+});
+
+let currentTab = 'research';
+
+function showModule(idx) {
+  document.querySelectorAll('.mod-item').forEach((m,i) => m.classList.toggle('active', i===idx));
+  currentTab = 'research';
+  renderModule(idx);
+}
+
+function renderModule(idx) {
+  const m = modules[idx];
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="card">
+      <h3>${m.title}</h3>
+      <p style="font-style:italic;color:var(--accent);font-size:13px;">${m.subtitle}</p>
+      <p style="font-size:11px;color:var(--muted);">${m.weeks}</p>
+      <p style="margin-top:8px;">${m.overview}</p>
+    </div>
+    <div class="tabs">
+      <div class="tab t-research ${currentTab==='research'?'active':''}" onclick="switchTab(${idx},'research')">Research & Reading</div>
+      <div class="tab t-activity ${currentTab==='activity'?'active':''}" onclick="switchTab(${idx},'activity')">Activities & Planning</div>
+      <div class="tab t-lab ${currentTab==='lab'?'active':''}" onclick="switchTab(${idx},'lab')">Labs - Code Generation</div>
+      <div class="tab t-quiz ${currentTab==='quiz'?'active':''}" onclick="switchTab(${idx},'quiz')">Quiz</div>
+      <div class="tab t-tryme ${currentTab==='tryme'?'active':''}" onclick="switchTab(${idx},'tryme')">&#127919; Try Me</div>
+    </div>
+    <div id="tab-content"></div>
+  `;
+  renderTab(idx, currentTab);
+}
+
+function switchTab(idx, tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTab(idx, tab);
+}
+
+function renderTab(idx, tab) {
+  const m = modules[idx];
+  const tc = document.getElementById('tab-content');
+
+  if (tab === 'research') {
+    tc.innerHTML = '<div class="card"><h3>'+m.research.title+'</h3>'+m.research.content+'</div>';
+  }
+  else if (tab === 'activity') {
+    const p = m.activity.prompt;
+    tc.innerHTML = `
+      <div class="card">
+        <h3>${m.activity.title}</h3>
+        <div class="scenario">${m.activity.scenario}</div>
+        <h4>Your 6-Layer AI Prompt:</h4>
+        <div class="prompt-tmpl">
+          <div class="prompt-layer"><span class="prompt-label l-r">ROLE</span><span>${p.role}</span></div>
+          <div class="prompt-layer"><span class="prompt-label l-t">TASK</span><span>${p.task}</span></div>
+          <div class="prompt-layer"><span class="prompt-label l-c">CONTEXT</span><span>${p.context}</span></div>
+          <div class="prompt-layer"><span class="prompt-label l-e">EXEMPLAR</span><span>${p.exemplar}</span></div>
+          <div class="prompt-layer"><span class="prompt-label l-f">FORMAT</span><span>${p.format}</span></div>
+          <div class="prompt-layer"><span class="prompt-label l-n">NOTE</span><span>${p.note}</span></div>
+        </div>
+        <h4>Steps (Across All 3 AI Companies):</h4>
+        <ol>${m.activity.steps.map(s => '<li>'+s+'</li>').join('')}</ol>
+        ${m.activity.compare_note ? '<div class="insight think"><span class="insight-icon">&#128161;</span><span>'+m.activity.compare_note+'</span></div>' : ''}
+      </div>`;
+  }
+  else if (tab === 'lab') {
+    const codes = m.lab.codes;
+    tc.innerHTML = `
+      <div class="card">
+        <h3>${m.lab.title}</h3>
+        <div class="scenario">${m.lab.scenario}</div>
+        <h4>Compare Three AI Implementations:</h4>
+        <div class="code-compare">
+          <div>
+            <div class="code-label gpt">&#9679; ${codes.gpt.label}</div>
+            <div class="code-block gpt">${codes.gpt.code}</div>
+          </div>
+          <div>
+            <div class="code-label claude">&#9679; ${codes.claude.label}</div>
+            <div class="code-block claude">${codes.claude.code}</div>
+          </div>
+          <div>
+            <div class="code-label gem">&#9679; ${codes.gemini.label}</div>
+            <div class="code-block gem">${codes.gemini.code}</div>
+          </div>
+        </div>
+        <h4>Lab Tasks:</h4>
+        <ul style="list-style:none;padding:0;">${m.lab.tasks.map(t => '<li style="padding:6px 0;cursor:pointer;font-size:13px;" onclick="toggleTask(this)">&#9744; '+t+'</li>').join('')}</ul>
+      </div>`;
+  }
+  else if (tab === 'quiz') {
+    renderQuiz(idx, tc);
+  }
+  else if (tab === 'tryme') {
+    renderTryMe(idx, tc);
+  }
+}
+
+function toggleTask(el) {
+  el.style.textDecoration = el.style.textDecoration === 'line-through' ? 'none' : 'line-through';
+}
+
+function renderQuiz(idx, container) {
+  const m = modules[idx];
+  let html = '<div id="quiz-area">';
+  m.quiz.forEach(function(q, i) {
+    html += '<div class="quiz-q" data-ans="' + q.ans + '" data-exp="' + q.exp.replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '">';
+    html += '<h4>Q' + (i+1) + ': ' + q.q + '</h4>';
+    q.opts.forEach(function(o, j) {
+      html += '<button class="q-opt" data-idx="' + j + '" onclick="checkQ(this)">' + o + '</button>';
+    });
+    html += '<div class="q-exp"></div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function checkQ(btn) {
+  const parent = btn.closest('.quiz-q');
+  const sel = parseInt(btn.getAttribute('data-idx'));
+  const ans = parseInt(parent.getAttribute('data-ans'));
+  const exp = parent.getAttribute('data-exp');
+  parent.querySelectorAll('.q-opt').forEach(function(b,i) {
+    b.disabled = true;
+    if(i===ans) b.classList.add('correct');
+    else if(i===sel && i!==ans) b.classList.add('wrong');
+  });
+  const expDiv = parent.querySelector('.q-exp');
+  expDiv.textContent = (sel===ans ? 'Correct! ' : 'Not quite. ') + exp;
+  expDiv.style.display = 'block';
+}
+
+// ============================================================
+// TRY ME TAB
+// ============================================================
+function renderTryMe(idx, container) {
+  var m = modules[idx];
+  var t = m.tryme;
+  var h = t.hints;
+  var html = '<div class="card"><h3 style="background:linear-gradient(135deg,#c026d3,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">&#127919; '+t.title+'</h3>';
+  html += '<div class="tryme-scenario"><strong>Your Challenge:</strong> '+t.scenario+'</div>';
+  html += '<h4>Your 6-Layer RTCEFN Prompt:</h4><div class="prompt-tmpl">';
+  var layers=[{k:'role',l:'ROLE',c:'l-r'},{k:'task',l:'TASK',c:'l-t'},{k:'context',l:'CONTEXT',c:'l-c'},{k:'exemplar',l:'EXEMPLAR',c:'l-e'},{k:'format',l:'FORMAT',c:'l-f'},{k:'note',l:'NOTE',c:'l-n'}];
+  for(var i=0;i<layers.length;i++){var L=layers[i];
+    html+='<div class="prompt-layer"><span class="prompt-label '+L.c+'">'+L.l+'</span><span style="flex:1;"><textarea id="tryme-'+L.k+'" rows="3" style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;padding:8px 10px;resize:vertical;" placeholder="'+h[L.k]+'"></textarea></span></div>';
+  }
+  html+='</div>';
+  html+='<h4>Submit to AI:</h4>';
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">';
+  html+='<a class="submit-btn" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,#10a37f,#1a7f64);color:#fff;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;" onclick="submitTryMe(\'chatgpt\')"><span>&#9679;</span> ChatGPT</a>';
+  html+='<a class="submit-btn" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;" onclick="submitTryMe(\'claude\')"><span>&#9679;</span> Claude</a>';
+  html+='<a class="submit-btn" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,#1a73e8,#4285f4);color:#fff;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;" onclick="submitTryMe(\'gemini\')"><span>&#9679;</span> Gemini</a>';
+  html+='<button style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:12px;font-weight:600;" onclick="copyTryMe()">&#128203; Copy Prompt</button>';
+  html+='</div>';
+  html+='<h4 style="margin-top:14px;">After You Submit &mdash; Follow These Steps:</h4><ol>';
+  for(var s=0;s<t.steps.length;s++){html+='<li style="padding:4px 0;font-size:13px;">'+t.steps[s]+'</li>';}
+  html+='</ol>';
+  html+='</div>';
+  container.innerHTML = html;
+}
+
+function buildTryMeText() {
+  var layers = ['role','task','context','exemplar','format','note'];
+  var labels = ['ROLE','TASK','CONTEXT','EXEMPLAR','FORMAT','NOTE'];
+  var parts = [];
+  for (var i=0; i<layers.length; i++) {
+    var el = document.getElementById('tryme-' + layers[i]);
+    if (el && el.value.trim()) parts.push('['+labels[i]+']\n'+el.value.trim());
+  }
+  if (parts.length===0) { alert('Please fill in at least one field.'); return null; }
+  return parts.join('\n\n');
+}
+
+function submitTryMe(platform) {
+  var text = buildTryMeText(); if(!text) return;
+  var url = '';
+  if(platform==='chatgpt') url='https://chat.openai.com/?q='+encodeURIComponent(text);
+  else if(platform==='claude') url='https://claude.ai/new?q='+encodeURIComponent(text);
+  else if(platform==='gemini') url='https://gemini.google.com/app?q='+encodeURIComponent(text);
+  window.open(url,'_blank');
+}
+
+function copyTryMe() {
+  var text = buildTryMeText(); if(!text) return;
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){
+      alert('Prompt copied to clipboard!');
+    });
+  } else {
+    var t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+    alert('Prompt copied to clipboard!');
+  }
+}
+
+// Init
+showModule(0);
+</script>
+</body>
+</html>
