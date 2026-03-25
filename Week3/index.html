@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROL // 2019</title>
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
+        /* selector {
+        properties: value; 
+
+        for example: 
+
+        car-seat {
+            textile-type: leather;
+            color: brown;
+            stitching: white;
+        }
+
+
+        }*/
+
+        * {
+            --button-bg: #0B0D0C;
+            --button-border: #35393A;
+            --button-color: #909291;
+            --button-hover: #E7E7E7;
+            --control-red: rgb(182, 33, 33);
+
+              font-family: "Bricolage Grotesque", sans-serif;
+                font-optical-sizing: auto;
+                font-variation-settings:
+                    "wdth" 100;
+
+        }
+
+
+
+        body {
+            background-color: slategray;
+            background:url('./assets/Polaris.webp'); 
+            padding: 95px;
+            overflow: hidden;
+
+        }
+        div {
+            background-color: white;
+        }
+        #logo {
+            background-color: red;
+            margin-bottom: 185px;
+
+        }
+
+        #logo img {
+            width: 256px;
+        }
+
+        nav {
+            color: lightblue;
+        }
+
+        .return span {
+            background-color: black;
+            color: white;
+        }
+
+        .return {
+            color: var(--button-hover);
+        }
+
+        .nav {
+            background-color: limegreen;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 48px;
+        }
+
+        .nav-group {
+            margin-bottom: 100px;
+            background-color: red;
+            padding: 0px;
+        }
+
+        .nav-group li {
+            background-color: var(--button-bg);
+            width: 300px;
+            color: var(--button-color);
+            padding: 20px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--button-border);
+            margin-bottom: 5px;
+            list-style: "";
+
+        }
+
+        .nav-group li:hover {
+            background-color: var(--button-hover);
+            color: var(--button-bg);
+        }
+
+        #B {
+            background-color: white;
+            color: black;
+        }
+       
+        .footer {
+            margin-top: 10px;
+            background-color: var(--button-bg);
+            width: 500px;
+            color: var(--button-color);
+            padding: 20px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--button-border);
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGO -->
+     <div id="logo"><img src="./assets/Control_video_game_logo.svg.png"></div>
+     <nav class="nav-class">
+        <ul class="nav-group">
+            <li>Continue Game</li>
+            <li>New Game</li>
+            <li>Mission Select</li>
+            <li>Options</li>
+            <li>Credits</li>
+        </ul>
+     </nav>
+
+<div class="return">
+    <span id="B">B</span>Return to the Title Screen
+</div>
+
+<footer class="footer">
+    <h2>Credits</h2>
+    Background Image: <a href="https://control.fandom.com/wiki/Polaris">Control Wiki</a>
+</footer>
+</body>
+</html>

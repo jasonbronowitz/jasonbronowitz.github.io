@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JASON BRONOWITZ // PORTFOLIO</title>
+
+    <!-- AI DISCLOSURE:
+     
+    I used ChatGPT to help setup the overall structure, giving it my initial code and asking it to:
+    
+    -Set a sizing base of 8px, so I can make adjustments later
+    -Set styling from the top of the HTML hierarchy down (root, body, container divs, etc...)
+
+    -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&family=Public+Sans:wght@400&display=swap');
+
+        /* ROOT: design system */
+        :root {
+            --space: 8px;
+            --text-color: #14213d;
+            --bg-color: #edede9;
+        }
+
+        /* GLOBAL RESET + BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Public Sans', sans-serif;
+            color: var(--text-color);
+        }
+
+        /* BODY: layout + background */
+        body {
+            min-height: 100vh;
+            padding: calc(var(--space) * 2);
+
+            background-color: var(--bg-color);
+            background-image:
+                repeating-radial-gradient(circle at 0 0, transparent 0, var(--bg-color) 33px),
+                repeating-linear-gradient(#d5bdaf55, #d5bdaf);
+
+            /* NATURAL VERTICAL SPACING */
+            display: flex;
+            flex-direction: column;
+            gap: var(--space);
+        }
+
+        /* TYPOGRAPHY (minimal, not spacing-heavy) */
+        h1, h2, h3 {
+            font-family: 'Urbanist', sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+    <header><h1>JASON BRONOWITZ</h1></header>
+    <div class="title"><h3>ai engineering. data. digital humanities.</h3></div>
+    <div class="atAGlance">    <h1>at a glance</h1>
+        <div class="cards">
+        <button id="courses"><h3>courses</h3><p>classes that I teach</p></button>
+        <button id="projects"><h3>projects</h3><p>projects that I've created</p></button>
+        <button id="education"><h3>education</h3><p>formal training I've acquired</p></button>
+</div>
+    </div>
+    <p>Hello, world!</p>
+</body>
+</html>
