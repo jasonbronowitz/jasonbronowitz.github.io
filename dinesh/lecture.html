@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Architecture — Analogous to Computer Architecture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bg:#0a0e1a;--s1:#131829;--s2:#1a2035;--s3:#222844;
+  --a1:#6c5ce7;--a2:#00cec9;--a3:#fd79a8;--a4:#fdcb6e;--a5:#55efc4;
+  --tx:#e8e8f0;--td:#8892b0;--bd:#2a3050;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden;line-height:1.7}
+
+/* ── NAV ── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(10,14,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:10px 24px;display:flex;align-items:center;justify-content:space-between}
+#nav .logo{font-weight:700;font-size:13px;color:var(--a2);letter-spacing:1.5px;text-transform:uppercase}
+#nav .dots{display:flex;gap:6px}
+.dot-n{width:9px;height:9px;border-radius:50%;background:var(--bd);cursor:pointer;transition:.3s}
+.dot-n.on{background:var(--a1);transform:scale(1.4)}
+#progress{position:fixed;top:46px;left:0;height:3px;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));z-index:998;width:0%;transition:width .3s}
+
+/* ── SLIDES ── */
+.sl{min-height:100vh;padding:80px 28px 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.sl-num{position:absolute;top:70px;left:30px;font-size:100px;font-weight:900;color:rgba(108,92,231,.06);pointer-events:none}
+h1{font-size:clamp(32px,5vw,58px);font-weight:900;text-align:center;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(24px,3.5vw,40px);font-weight:700;text-align:center;margin-bottom:8px}
+.sub{font-size:16px;color:var(--td);text-align:center;max-width:660px;margin:8px auto 30px;line-height:1.7}
+h3{font-size:20px;font-weight:600;margin-bottom:8px}
+code,.cd{font-family:'JetBrains Mono',monospace;background:var(--s2);padding:2px 7px;border-radius:5px;font-size:13px;color:var(--a2)}
+
+/* ── SHARED ── */
+.box{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:30px;max-width:880px;width:100%;margin:16px auto}
+.insight{background:linear-gradient(135deg,rgba(108,92,231,.1),rgba(0,206,201,.1));border:1px solid rgba(108,92,231,.25);border-radius:14px;padding:22px 26px;max-width:700px;width:100%;margin:20px auto;font-size:15px}
+.insight .il{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--a1);font-weight:700;margin-bottom:6px}
+.btn{padding:11px 26px;border-radius:10px;border:none;font-family:'Inter';font-weight:600;font-size:13px;cursor:pointer;transition:.3s}
+.bp{background:var(--a1);color:#fff}.bp:hover{background:#5a4bd5;transform:translateY(-2px)}
+.bo{background:transparent;color:var(--a2);border:1px solid var(--a2)}.bo:hover{background:rgba(0,206,201,.1)}
+.brow{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+
+/* ── MORPH ANIM ── */
+.morph-in{opacity:0;transform:translateY(40px) scale(.97);transition:opacity .7s ease,transform .7s ease}
+.morph-in.v{opacity:1;transform:translateY(0) scale(1)}
+.morph-card{transition:all .6s cubic-bezier(.34,1.56,.64,1)}
+.morph-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 16px 50px rgba(108,92,231,.18)}
+
+/* ── ARCHITECTURE MORPH DIAGRAM ── */
+#morphDiagram{display:flex;flex-direction:column;align-items:center;gap:0;max-width:560px;width:100%;margin:0 auto}
+.m-layer{width:100%;padding:16px 22px;border:2px solid var(--bd);text-align:center;cursor:pointer;transition:all .5s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+.m-layer::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(108,92,231,.05),rgba(0,206,201,.05));opacity:0;transition:opacity .4s}
+.m-layer:hover::after{opacity:1}
+.m-layer:hover{border-color:var(--a1);transform:scale(1.03)}
+.m-layer:first-child{border-radius:14px 14px 0 0}
+.m-layer:last-child{border-radius:0 0 14px 14px}
+.m-layer .tags{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tag{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:20px;font-weight:600}
+.tag-c{background:rgba(253,121,168,.15);color:var(--a3)}
+.tag-a{background:rgba(0,206,201,.15);color:var(--a2)}
+.m-layer .ln{font-weight:700;font-size:17px;margin:6px 0 2px}
+.m-layer .ld{font-size:12px;color:var(--td)}
+.m-div{width:100%;height:2px;background:repeating-linear-gradient(90deg,var(--a1) 0,var(--a1) 6px,transparent 6px,transparent 12px)}
+
+/* layer morph state */
+.m-layer.expanded{background:var(--s2);border-color:var(--a2);padding:24px 22px}
+.m-layer .detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .5s ease,opacity .4s ease;font-size:13px;color:var(--td);line-height:1.6;margin-top:0}
+.m-layer.expanded .detail{max-height:200px;opacity:1;margin-top:10px}
+
+/* ── TRAIN WINDOW ── */
+#trainScene{position:relative;width:100%;max-width:700px;height:200px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#1a1a3e 0%,#2d1b4e 40%,#0d2137 100%);margin:0 auto}
+#trainFrame{position:absolute;inset:0;border:12px solid #2a2a4a;border-radius:16px;pointer-events:none;z-index:3;box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+#trainFrameLabel{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--a2);z-index:4;background:rgba(42,42,74,.9);padding:3px 12px;border-radius:10px}
+#sceneryTrack{position:absolute;bottom:30px;left:0;display:flex;gap:0;z-index:1;transition:none}
+.s-token{width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'JetBrains Mono',monospace;border-radius:8px;margin:0 4px;flex-shrink:0;text-align:center;line-height:1.2}
+#trainGround{position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(180deg,#1a3a2a,#0d2a1a);z-index:2}
+.stars{position:absolute;top:0;left:0;right:0;height:80px;z-index:0}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 2s infinite alternate}
+@keyframes twinkle{0%{opacity:.3}100%{opacity:1}}
+
+/* ── INSTRUCTION CYCLE MORPH ── */
+.cycle-ring{position:relative;width:320px;height:320px;margin:0 auto}
+.cycle-node{position:absolute;width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:11px;font-weight:600;border:2px solid var(--bd);background:var(--s1);transition:all .6s cubic-bezier(.34,1.56,.64,1);cursor:pointer;z-index:2}
+.cycle-node.active{transform:scale(1.2);border-color:var(--a2);box-shadow:0 0 30px rgba(0,206,201,.3)}
+.cycle-node .cn-icon{font-size:22px;margin-bottom:4px}
+.cycle-node .cn-sub{font-size:9px;color:var(--td);font-weight:400}
+.cycle-arrow{position:absolute;z-index:1;color:var(--bd);font-size:20px;transition:color .4s}
+.cycle-arrow.active{color:var(--a1)}
+
+/* ── KV CACHE VIS ── */
+.kv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:4px;margin:12px 0}
+.kv-cell{height:36px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);transition:all .4s;position:relative;overflow:hidden}
+.kv-cell.filled{border-color:transparent}
+.kv-cell .kv-inner{position:absolute;bottom:0;left:0;right:0;height:0%;transition:height .5s ease;border-radius:0 0 5px 5px}
+.kv-cell.filled .kv-inner{height:100%;border-radius:5px}
+.kv-cell.cached{animation:cachePulse 1s ease}
+@keyframes cachePulse{0%{box-shadow:0 0 0 0 rgba(0,206,201,.5)}70%{box-shadow:0 0 0 8px rgba(0,206,201,0)}100%{box-shadow:0 0 0 0 rgba(0,206,201,0)}}
+
+/* ── PROMPT BUILDER ── */
+.pb-slot{background:var(--s2);border:2px dashed var(--bd);border-radius:12px;padding:16px 20px;margin:8px 0;transition:all .5s cubic-bezier(.34,1.56,.64,1);cursor:pointer;position:relative;overflow:hidden}
+.pb-slot.filled{border-style:solid;border-color:var(--a2)}
+.pb-slot .pb-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px}
+.pb-slot .pb-text{font-size:14px;min-height:20px}
+.pb-slot .pb-arch{font-size:11px;color:var(--td);margin-top:4px;font-style:italic}
+.pb-meter{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin:16px 0 8px}
+.pb-meter-fill{height:100%;border-radius:3px;transition:width .6s ease,background .4s;background:var(--a3)}
+.conf-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--td)}
+
+/* ── LLM SEND BUTTONS ── */
+.llm-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.3)!important}
+.llm-btn:active{transform:translateY(0) scale(.97)}
+#sendToLLM.unlocked{opacity:1!important;pointer-events:auto!important}
+#sendToLLM2.unlocked{opacity:1!important;pointer-events:auto!important}
+
+/* ── TEXTAREA PRACTICE LAB ── */
+.ta-group{margin-bottom:14px;position:relative}
+.ta-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.ta-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.ta-title{font-weight:700;font-size:15px;letter-spacing:.5px}
+.ta-arch{font-size:11px;color:var(--td);font-style:italic;margin-left:auto}
+.ta-input{
+  width:100%;min-height:58px;max-height:140px;resize:vertical;
+  background:var(--s2);border:2px solid var(--bd);border-radius:12px;
+  padding:14px 16px;font-family:'Inter',sans-serif;font-size:14px;
+  color:var(--tx);line-height:1.6;outline:none;
+  transition:border-color .4s,box-shadow .4s;
+}
+.ta-input::placeholder{color:rgba(136,146,176,.5);font-size:13px}
+.ta-input:focus{border-color:var(--a2);box-shadow:0 0 20px rgba(0,206,201,.1)}
+.ta-input.has-text{border-color:var(--a5);background:rgba(85,239,196,.03)}
+.ta-hint{font-size:11px;color:var(--td);margin-top:4px;padding-left:36px;opacity:.7}
+@media(max-width:700px){.ta-arch{margin-left:0;margin-top:2px}.ta-hint{padding-left:0}}
+#sendToLLM.unlocked{animation:unlockGlow .8s ease}
+@keyframes unlockGlow{0%{box-shadow:none}50%{box-shadow:0 0 30px rgba(0,206,201,.2)}100%{box-shadow:none}}
+
+/* ── INFERENCE CARDS ── */
+.inf-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 18px;margin:6px 0;display:flex;align-items:center;gap:14px;transition:all .5s cubic-bezier(.34,1.56,.64,1)}
+.inf-card.on{border-color:var(--a5);background:rgba(85,239,196,.05)}
+.inf-dot{width:12px;height:12px;border-radius:50%;background:var(--a3);flex-shrink:0;transition:background .4s}
+.inf-card.on .inf-dot{background:var(--a5)}
+.inf-q{font-weight:600;font-size:14px}
+.inf-a{font-size:12px;color:var(--td)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .sl{padding:70px 16px 40px}
+  .box{padding:20px}
+  .cycle-ring{transform:scale(.8)}
+  #trainScene{height:160px}
+  .m-layer .tags{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="logo">AI Architecture Lecture</div><div class="dots" id="dots"></div></nav>
+<div id="progress"></div>
+
+<!-- ============================================ -->
+<!-- S0: TITLE -->
+<!-- ============================================ -->
+<section class="sl" id="s0">
+  <h1 style="margin-bottom:4px">The AI Architecture</h1>
+  <h2 style="font-size:20px;color:var(--td);font-weight:400">Analogous to Computer Architecture</h2>
+  <p class="sub" style="margin-top:16px">
+    What if I tell you that every time you type into ChatGPT or Claude, you basically operating
+    a whole computer? This lecture gonna show you how the things that happen inside a traditional
+    computer is really similar to what happens inside a Large Language Model.
+  </p>
+  <div class="brow"><button class="btn bp" onclick="go(1)">Start the Lecture →</button></div>
+</section>
+
+<!-- ============================================ -->
+<!-- S1: THE ARCHITECTURE LAYERS -->
+<!-- ============================================ -->
+<section class="sl" id="s1">
+  <div class="sl-num">01</div>
+  <h2 class="morph-in">The Big Picture</h2>
+  <p class="sub morph-in">Click any layer to see how the computer part morph into its AI equivalent.</p>
+  <div class="box morph-in">
+    <div id="morphDiagram">
+      <div class="m-layer" onclick="toggleLayer(this)" data-key="io">
+        <div class="tags"><span class="tag tag-c">I/O Devices</span><span class="tag tag-a">Chat Interface</span></div>
+        <div class="ln">Input / Output</div>
+        <div class="ld">Keyboard & Monitor ↔ Your Text Window</div>
+        <div class="detail">In a computer, the keyboard send electrical signals that get converted to ASCII codes. In an LLM, your text get converted to token IDs — basically the same thing. Output is reverse: token IDs back to text, like GPU turning pixel data into screen image.</div>
+      </div>
+      <div class="m-div"></div>
+      <div class="m-layer" onclick="toggleLayer(this)" data-key="cpu">
+        <div class="tags"><span class="tag tag-c">CPU / ALU</span><span class="tag tag-a">Transformer Engine</span></div>
+        <div class="ln">Processing</div>
+        <div class="ld">Arithmetic & Logic ↔ Attention & Inference</div>
+        <div class="detail">The CPU use logic gates for arithmetic and decisions. The Transformer use matrix multiplication and attention scores to do the same — weigh inputs and produce output. The ALU is to CPU what attention heads are to the Transformer.</div>
+      </div>
+      <div class="m-div"></div>
+      <div class="m-layer" onclick="toggleLayer(this)" data-key="ram">
+        <div class="tags"><span class="tag tag-c">RAM</span><span class="tag tag-a">Context Window</span></div>
+        <div class="ln">Working Memory</div>
+        <div class="ld">Temporary Fast Storage ↔ Current Conversation</div>
+        <div class="detail">RAM hold what the CPU is actively working with. Context window hold everything the LLM is considering right now. Both are fast, temporary, and limited. When they fill up, things slow down or get dropped.</div>
+      </div>
+      <div class="m-div"></div>
+      <div class="m-layer" onclick="toggleLayer(this)" data-key="cache">
+        <div class="tags"><span class="tag tag-c">L1/L2/L3 Cache</span><span class="tag tag-a">KV Cache</span></div>
+        <div class="ln">Speed Memory (Cache)</div>
+        <div class="ld">Recently Used Data ↔ Pre-computed Attention Pairs</div>
+        <div class="detail">CPU cache store recently used data close to the processor so it don't gotta go back to slow RAM. The KV Cache store previously computed Key-Value pairs so the Transformer skip recalculating attention for old tokens. Same concept — avoid re-doing expensive work.</div>
+      </div>
+      <div class="m-div"></div>
+      <div class="m-layer" onclick="toggleLayer(this)" data-key="disk">
+        <div class="tags"><span class="tag tag-c">Hard Drive / SSD</span><span class="tag tag-a">Model Weights</span></div>
+        <div class="ln">Long-Term Storage</div>
+        <div class="ld">Persistent Files ↔ Learned Knowledge in Billions of Parameters</div>
+        <div class="detail">Hard drive keep files permanently even when power off. Model weights keep knowledge permanently between conversations. The difference? You can easily add a file to a hard drive. Adding knowledge to an LLM require expensive retraining.</div>
+      </div>
+    </div>
+  </div>
+  <div class="insight morph-in">
+    <div class="il">Key Insight</div>
+    A computer and an LLM both solve the same fundamental problem: take input, process it using some knowledge, keep track of what you doing, and give back useful output. They just solve it in very different ways.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S2: INSTRUCTION CYCLE -->
+<!-- ============================================ -->
+<section class="sl" id="s2">
+  <div class="sl-num">02</div>
+  <h2 class="morph-in">What Happen When You Chat?</h2>
+  <p class="sub morph-in">A CPU do <code>Fetch → Decode → Execute → Store</code>. An LLM do the same cycle in its own way. Click Play to watch it morph.</p>
+  <div class="box morph-in">
+    <div class="cycle-ring" id="cycleRing">
+      <!-- nodes positioned via JS -->
+    </div>
+    <div id="cycleCaption" style="text-align:center;margin-top:16px;font-size:14px;color:var(--td);min-height:40px"></div>
+    <div class="brow">
+      <button class="btn bp" id="cyclePlayBtn" onclick="playCycle()">▶ Play Cycle</button>
+      <button class="btn bo" onclick="resetCycle()">↺ Reset</button>
+      <button class="btn bo" id="toggleViewBtn" onclick="toggleCycleView()">Switch to LLM View</button>
+    </div>
+  </div>
+  <div class="insight morph-in">
+    <div class="il">The Morphing Insight</div>
+    Watch how <code>Fetch</code> morph into <code>Tokenize</code>, <code>Decode</code> into <code>Attend</code>,
+    <code>Execute</code> into <code>Infer</code>, and <code>Store</code> into <code>Generate</code>. Same pattern, different domain.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S3: TRAIN WINDOW (CONTEXT) -->
+<!-- ============================================ -->
+<section class="sl" id="s3">
+  <div class="sl-num">03</div>
+  <h2 class="morph-in">The Train Window Analogy</h2>
+  <p class="sub morph-in">Imagine you sitting on a train, looking out the window. The scenery that pass by is like tokens in a conversation. The window got a fixed size — that is your context window. Once scenery scroll past, it gone.</p>
+  <div class="box morph-in" style="padding:20px">
+    <div id="trainScene">
+      <div class="stars" id="stars"></div>
+      <div id="trainFrameLabel">CONTEXT WINDOW</div>
+      <div id="trainFrame"></div>
+      <div id="sceneryTrack"></div>
+      <div id="trainGround"></div>
+    </div>
+    <div style="text-align:center;margin-top:14px">
+      <span id="trainCounter" style="font-family:'JetBrains Mono';color:var(--a4);font-size:14px">0 tokens sent</span>
+    </div>
+    <div class="brow">
+      <button class="btn bp" onclick="sendTrainMessage()">+ Send a Message</button>
+      <button class="btn bo" onclick="resetTrain()">↺ New Conversation</button>
+    </div>
+    <p id="trainStatus" style="text-align:center;margin-top:10px;font-size:12px;color:var(--td)"></p>
+  </div>
+  <div class="insight morph-in">
+    <div class="il">Why This Matters</div>
+    This is why a chatbot "forget" things in long conversations. Its window just got full. Old scenery — your earlier messages — scroll out of view. You gotta remind the AI what you talked about, just like you can't describe scenery you already passed on the train.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S4: CACHING DEEP DIVE -->
+<!-- ============================================ -->
+<section class="sl" id="s4">
+  <div class="sl-num">04</div>
+  <h2 class="morph-in">Caching: The Speed Secret</h2>
+  <p class="sub morph-in">Without cache, every new message mean recalculating everything from scratch. With cache, old work get reused instantly. Watch the KV Cache in action.</p>
+  <div class="box morph-in">
+    <h3 style="text-align:center;color:var(--a2);margin-bottom:6px">The Memory Hierarchy</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:16px 0">
+      <div class="morph-card" style="background:var(--s2);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--bd)">
+        <div style="font-size:24px">⚡</div>
+        <div style="font-weight:700;font-size:13px;color:var(--a3)">L1 / KV Current</div>
+        <div style="font-size:11px;color:var(--td)">This exact generation step</div>
+      </div>
+      <div class="morph-card" style="background:var(--s2);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--bd)">
+        <div style="font-size:24px">🔄</div>
+        <div style="font-weight:700;font-size:13px;color:var(--a4)">L2 / KV Session</div>
+        <div style="font-size:11px;color:var(--td)">This whole conversation</div>
+      </div>
+      <div class="morph-card" style="background:var(--s2);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--bd)">
+        <div style="font-size:24px">🌐</div>
+        <div style="font-weight:700;font-size:13px;color:var(--a2)">L3 / Prompt Cache</div>
+        <div style="font-size:11px;color:var(--td)">Shared across all conversations</div>
+      </div>
+      <div class="morph-card" style="background:var(--s2);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--bd)">
+        <div style="font-size:24px">💾</div>
+        <div style="font-weight:700;font-size:13px;color:var(--a1)">Disk / Weights</div>
+        <div style="font-size:11px;color:var(--td)">Permanent learned knowledge</div>
+      </div>
+    </div>
+
+    <h3 style="text-align:center;color:var(--a2);margin:20px 0 8px">Interactive: KV Cache Simulation</h3>
+    <div style="display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:6px;flex-wrap:wrap">
+      <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:var(--s2);border:1px solid var(--bd)"></span><span style="font-size:11px;color:var(--td)">Empty</span>
+      <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#2d6a4f"></span><span style="font-size:11px;color:var(--td)">Cached (reused!)</span>
+      <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:var(--a1)"></span><span style="font-size:11px;color:var(--td)">New computation</span>
+    </div>
+    <div class="kv-grid" id="kvGrid"></div>
+    <div style="text-align:center">
+      <span id="kvStats" style="font-family:'JetBrains Mono';font-size:13px;color:var(--a4)">Turn 0 — Send a message to begin</span>
+    </div>
+    <div class="brow">
+      <button class="btn bp" onclick="kvSendMessage()">+ Send Message (New Turn)</button>
+      <button class="btn bo" onclick="kvReset()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="insight morph-in">
+    <div class="il">Prompt Caching</div>
+    When thousands of conversations share the same system prompt, prompt caching store the pre-computed KV pairs once and reuse them — like L3 cache shared between CPU cores. First conversation compute it, every conversation after get a <code>cache hit</code> and skip the work. That is why cached tokens cost less on the API.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S5: PROMPT FRAMEWORK R.C.I.S.F -->
+<!-- ============================================ -->
+<section class="sl" id="s5">
+  <div class="sl-num">05</div>
+  <h2 class="morph-in">The Prompt = A Boot Sequence</h2>
+  <p class="sub morph-in">A good prompt follow the R.C.I.S.F framework — Role, Context, Intent, Specification, Format. Each one map to a layer of the computer boot sequence. Build one interactively below.</p>
+
+  <div class="box morph-in">
+    <div id="promptBuilder">
+      <div class="pb-slot" data-idx="0" onclick="fillSlot(0)">
+        <div class="pb-label" style="color:var(--a3)">① ROLE — BIOS / Firmware</div>
+        <div class="pb-text" id="pb0">Click to set: "Act as a senior veterinarian with 20 years experience"</div>
+        <div class="pb-arch">→ Loads FIRST into KV Cache. Sets identity. Every future token attend back to this.</div>
+      </div>
+      <div class="pb-slot" data-idx="1" onclick="fillSlot(1)">
+        <div class="pb-label" style="color:var(--a4)">② CONTEXT — OS / Environment</div>
+        <div class="pb-text" id="pb1">Click to set: "Writing a blog for first-time puppy owners with no medical background"</div>
+        <div class="pb-arch">→ Configures audience, situation, and purpose. Like loading the operating system.</div>
+      </div>
+      <div class="pb-slot" data-idx="2" onclick="fillSlot(2)">
+        <div class="pb-label" style="color:var(--a2)">③ INTENT — Opcode / Instruction</div>
+        <div class="pb-text" id="pb2">Click to set: "Write a 500-word article"</div>
+        <div class="pb-arch">→ The main command. WRITE, SUMMARIZE, COMPARE — each activate different processing paths.</div>
+      </div>
+      <div class="pb-slot" data-idx="3" onclick="fillSlot(3)">
+        <div class="pb-label" style="color:var(--a5)">④ SPECIFICATION — Operands / Data</div>
+        <div class="pb-text" id="pb3">Click to set: "Top 5 essential vaccinations for puppies in their first 12 months"</div>
+        <div class="pb-arch">→ The data and constraints. Like operands telling the CPU WHAT to process.</div>
+      </div>
+      <div class="pb-slot" data-idx="4" onclick="fillSlot(4)">
+        <div class="pb-label" style="color:var(--a1)">⑤ FORMAT — Output Config / Display</div>
+        <div class="pb-text" id="pb4">Click to set: "Warm friendly tone, include a table, end with one-sentence takeaway"</div>
+        <div class="pb-arch">→ How to present the result. Like configuring the display driver and output mode.</div>
+      </div>
+    </div>
+
+    <div class="pb-meter"><div class="pb-meter-fill" id="pbFill" style="width:0%"></div></div>
+    <div class="conf-labels"><span>❌ Guessing everything</span><span>✅ All systems configured</span></div>
+
+    <h3 style="text-align:center;margin-top:24px;color:var(--a2);font-size:16px">The 5 Inferences — What the LLM Decode</h3>
+    <div id="infCards">
+      <div class="inf-card" id="inf0"><div class="inf-dot"></div><div><div class="inf-q">WHO AM I?</div><div class="inf-a">Guessing... generic assistant</div></div></div>
+      <div class="inf-card" id="inf1"><div class="inf-dot"></div><div><div class="inf-q">WHO AM I TALKING TO?</div><div class="inf-a">Guessing... someone, maybe adult?</div></div></div>
+      <div class="inf-card" id="inf2"><div class="inf-dot"></div><div><div class="inf-q">WHAT DO THEY WANT?</div><div class="inf-a">Guessing... information about something</div></div></div>
+      <div class="inf-card" id="inf3"><div class="inf-dot"></div><div><div class="inf-q">HOW MUCH?</div><div class="inf-a">Guessing... medium length maybe?</div></div></div>
+      <div class="inf-card" id="inf4"><div class="inf-dot"></div><div><div class="inf-q">WHAT SHAPE?</div><div class="inf-a">Guessing... paragraphs probably</div></div></div>
+    </div>
+    <div class="brow">
+      <button class="btn bo" onclick="resetPromptBuilder()">↺ Reset Builder</button>
+    </div>
+
+    <!-- SEND TO LLM SECTION -->
+    <div id="sendToLLM" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--bd);opacity:0.3;pointer-events:none;transition:all .5s">
+      <h3 style="text-align:center;color:var(--a2);font-size:16px;margin-bottom:6px">Try Your Prompt — Send It to an LLM</h3>
+      <p style="text-align:center;font-size:12px;color:var(--td);margin-bottom:14px">Fill all 5 slots above to unlock. Your assembled R.C.I.S.F prompt will be sent directly.</p>
+
+      <div id="assembledPrompt" style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 18px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--td);max-height:150px;overflow-y:auto;white-space:pre-wrap">Fill all 5 slots to see your assembled prompt here...</div>
+
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <!-- ChatGPT -->
+        <button class="btn llm-btn" onclick="sendToLLM('chatgpt')" style="background:#10a37f;color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073z" fill="white"/></svg>
+          ChatGPT
+        </button>
+
+        <!-- Claude -->
+        <button class="btn llm-btn" onclick="sendToLLM('claude')" style="background:#d97706;color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Claude
+        </button>
+
+        <!-- Gemini -->
+        <button class="btn llm-btn" onclick="sendToLLM('gemini')" style="background:linear-gradient(135deg,#4285f4,#ea4335,#fbbc04,#34a853);color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19.5h20L12 2z" fill="white" opacity="0.9"/></svg>
+          Gemini
+        </button>
+
+        <!-- Copy -->
+        <button class="btn llm-btn" id="copyPromptBtn" onclick="copyPrompt()" style="background:var(--s3);color:var(--a2);display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:1px solid var(--a2);font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          📋 Copy Prompt
+        </button>
+      </div>
+
+      <p id="sendStatus" style="text-align:center;margin-top:12px;font-size:12px;color:var(--td);min-height:18px"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S5b: PRACTICE LAB — YOUR OWN PROMPT -->
+<!-- ============================================ -->
+<section class="sl" id="s5b">
+  <div class="sl-num" style="color:rgba(0,206,201,.08)">✍️</div>
+  <h2 class="morph-in">Practice Lab: Build Your Own Prompt</h2>
+  <p class="sub morph-in">Now it is your turn. Type your own Role, Context, Intent, Specification, and Format below. Watch the confidence meter and assembled prompt update in real time — then send it straight to any LLM.</p>
+
+  <div class="box morph-in">
+    <!-- TEXTAREA 1: ROLE -->
+    <div class="ta-group">
+      <div class="ta-header">
+        <span class="ta-num" style="background:var(--a3)">1</span>
+        <span class="ta-title">ROLE</span>
+        <span class="ta-arch">BIOS / Firmware — "What machine am I?"</span>
+      </div>
+      <textarea id="ta0" class="ta-input" placeholder="e.g. Act as a senior data scientist specializing in machine learning..." oninput="onTaInput()"></textarea>
+      <div class="ta-hint">Set the identity and expertise level. This load first into the KV Cache and anchor everything.</div>
+    </div>
+
+    <!-- TEXTAREA 2: CONTEXT -->
+    <div class="ta-group">
+      <div class="ta-header">
+        <span class="ta-num" style="background:var(--a4)">2</span>
+        <span class="ta-title">CONTEXT</span>
+        <span class="ta-arch">OS / Environment — "What is the situation?"</span>
+      </div>
+      <textarea id="ta1" class="ta-input" placeholder="e.g. I am preparing a presentation for non-technical executives who need to approve our AI budget..." oninput="onTaInput()"></textarea>
+      <div class="ta-hint">Who is the audience? What is the situation? Why are you asking?</div>
+    </div>
+
+    <!-- TEXTAREA 3: INTENT -->
+    <div class="ta-group">
+      <div class="ta-header">
+        <span class="ta-num" style="background:var(--a2)">3</span>
+        <span class="ta-title">INTENT</span>
+        <span class="ta-arch">Opcode / Instruction — "What action to perform?"</span>
+      </div>
+      <textarea id="ta2" class="ta-input" placeholder="e.g. Create a 10-slide executive summary..." oninput="onTaInput()"></textarea>
+      <div class="ta-hint">The command verb: Write, Summarize, Compare, Analyze, Create, Explain...</div>
+    </div>
+
+    <!-- TEXTAREA 4: SPECIFICATION -->
+    <div class="ta-group">
+      <div class="ta-header">
+        <span class="ta-num" style="background:var(--a5)">4</span>
+        <span class="ta-title">SPECIFICATION</span>
+        <span class="ta-arch">Operands / Data — "What data and constraints?"</span>
+      </div>
+      <textarea id="ta3" class="ta-input" placeholder="e.g. covering ROI projections, risk analysis, and comparison with 3 competitor approaches. Limit scope to Q1-Q2 2026 data..." oninput="onTaInput()"></textarea>
+      <div class="ta-hint">The boundaries, data scope, number limits, and constraints.</div>
+    </div>
+
+    <!-- TEXTAREA 5: FORMAT -->
+    <div class="ta-group">
+      <div class="ta-header">
+        <span class="ta-num" style="background:var(--a1)">5</span>
+        <span class="ta-title">FORMAT</span>
+        <span class="ta-arch">Output Config / Display — "How to present it?"</span>
+      </div>
+      <textarea id="ta4" class="ta-input" placeholder="e.g. Use a professional but accessible tone. Include charts where possible. End each slide with a key takeaway bullet point..." oninput="onTaInput()"></textarea>
+      <div class="ta-hint">Tone, structure, length, visual elements, ending style.</div>
+    </div>
+
+    <!-- LIVE CONFIDENCE METER -->
+    <div style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--td)">Prompt Completeness</span>
+        <span id="taScore" style="font-family:'JetBrains Mono';font-size:13px;color:var(--a4)">0 / 5 fields</span>
+      </div>
+      <div class="pb-meter"><div class="pb-meter-fill" id="taFill" style="width:0%"></div></div>
+      <div class="conf-labels"><span>❌ Model will guess everything</span><span>✅ Full boot sequence loaded</span></div>
+    </div>
+
+    <!-- LIVE ASSEMBLED PROMPT PREVIEW -->
+    <div style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 style="color:var(--a2);font-size:15px;margin:0">Live Preview: Your Assembled Prompt</h3>
+        <span id="taTokenEst" style="font-family:'JetBrains Mono';font-size:11px;color:var(--td)">~0 tokens</span>
+      </div>
+      <div id="taPreview" style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--td);max-height:200px;overflow-y:auto;white-space:pre-wrap;min-height:60px;transition:border-color .3s">Your prompt will appear here as you type...</div>
+    </div>
+
+    <!-- SEND TO LLM BUTTONS -->
+    <div id="sendToLLM2" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);opacity:0.3;pointer-events:none;transition:all .5s">
+      <h3 style="text-align:center;color:var(--a2);font-size:15px;margin-bottom:12px">Send Your Prompt to an LLM</h3>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn llm-btn" onclick="sendCustom('chatgpt')" style="background:#10a37f;color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073z" fill="white"/></svg>
+          ChatGPT
+        </button>
+        <button class="btn llm-btn" onclick="sendCustom('claude')" style="background:#d97706;color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Claude
+        </button>
+        <button class="btn llm-btn" onclick="sendCustom('gemini')" style="background:linear-gradient(135deg,#4285f4,#ea4335,#fbbc04,#34a853);color:#fff;display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19.5h20L12 2z" fill="white" opacity="0.9"/></svg>
+          Gemini
+        </button>
+        <button class="btn llm-btn" id="copyCustomBtn" onclick="copyCustom()" style="background:var(--s3);color:var(--a2);display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;border:1px solid var(--a2);font-weight:600;font-size:14px;cursor:pointer;transition:all .3s">
+          📋 Copy
+        </button>
+      </div>
+      <p id="sendStatus2" style="text-align:center;margin-top:10px;font-size:12px;color:var(--td);min-height:18px"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S6: FIRST LINES MATTER -->
+<!-- ============================================ -->
+<section class="sl" id="s6">
+  <div class="sl-num">06</div>
+  <h2 class="morph-in">Why the First Lines Matter Most</h2>
+  <p class="sub morph-in">The first tokens in your prompt get THREE advantages at once — cache priority, attention anchoring, and survival priority. They is the L1 cache of your conversation.</p>
+  <div class="box morph-in">
+    <h3 style="text-align:center;color:var(--a2);margin-bottom:16px">Influence Decay — Position vs Power</h3>
+    <canvas id="influenceChart" width="800" height="260" style="width:100%;border-radius:12px;background:var(--s2)"></canvas>
+    <p style="text-align:center;font-size:12px;color:var(--td);margin-top:8px">Token at position 1 influence <strong style="color:var(--a2)">every</strong> subsequent token. Token at position 1000 influence far fewer. Earlier = more powerful.</p>
+  </div>
+  <div class="box morph-in" style="margin-top:12px">
+    <h3 style="text-align:center;color:var(--a2);margin-bottom:14px">The Boot Sequence Mapping</h3>
+    <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:0;font-size:13px">
+      <div style="padding:10px 14px;background:var(--a1);color:#fff;font-weight:600;border-radius:10px 0 0 0">Position</div>
+      <div style="padding:10px 14px;background:var(--a1);color:#fff;font-weight:600">CPU Equivalent</div>
+      <div style="padding:10px 14px;background:var(--a1);color:#fff;font-weight:600;border-radius:0 10px 0 0">What It Configure</div>
+
+      <div style="padding:10px 14px;background:var(--s2);color:var(--a3);font-weight:700">Lines 1-3</div>
+      <div style="padding:10px 14px;background:var(--s2)">BIOS / Firmware</div>
+      <div style="padding:10px 14px;background:var(--s2)">ROLE — "What machine am I?"</div>
+
+      <div style="padding:10px 14px;background:var(--s1);color:var(--a4);font-weight:700">Lines 4-8</div>
+      <div style="padding:10px 14px;background:var(--s1)">OS Kernel Config</div>
+      <div style="padding:10px 14px;background:var(--s1)">CONTEXT — "What are my rules?"</div>
+
+      <div style="padding:10px 14px;background:var(--s2);color:var(--a2);font-weight:700">Lines 9-12</div>
+      <div style="padding:10px 14px;background:var(--s2)">Loaded Libraries</div>
+      <div style="padding:10px 14px;background:var(--s2)">INTENT — "What am I running?"</div>
+
+      <div style="padding:10px 14px;background:var(--s1);color:var(--a5);font-weight:700">Lines 13-18</div>
+      <div style="padding:10px 14px;background:var(--s1)">Program Arguments</div>
+      <div style="padding:10px 14px;background:var(--s1)">SPECIFICATION — "What data to use?"</div>
+
+      <div style="padding:10px 14px;background:var(--s2);color:var(--a1);font-weight:700;border-radius:0 0 0 10px">Lines 19+</div>
+      <div style="padding:10px 14px;background:var(--s2)">Runtime Input</div>
+      <div style="padding:10px 14px;background:var(--s2);border-radius:0 0 10px 0">FORMAT + User messages</div>
+    </div>
+  </div>
+  <div class="insight morph-in">
+    <div class="il">Triple Advantage</div>
+    First lines get: (1) <strong>Cache priority</strong> — computed first, stay in KV cache longest. (2) <strong>Attention anchoring</strong> — positional encoding make early tokens like gravity wells. (3) <strong>Survival priority</strong> — system prompts get protected when context window overflow. The beginning of your prompt is the most valuable real estate you got.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- S7: SUMMARY -->
+<!-- ============================================ -->
+<section class="sl" id="s7">
+  <div class="sl-num">07</div>
+  <h2 class="morph-in">Putting It All Together</h2>
+  <p class="sub morph-in">An LLM is not some magic black box. It follow the same architectural patterns we been studying in computer science for decades.</p>
+  <div class="box morph-in">
+    <div style="display:grid;grid-template-columns:1fr 30px 1fr;gap:8px;text-align:center;font-size:14px" id="summaryGrid">
+    </div>
+  </div>
+  <div class="insight morph-in" style="margin-top:20px">
+    <div class="il">Final Thought</div>
+    Understanding this analogy make you a power user. Context window = RAM means keep conversations focused. Prompts = commands means write them with structure. Weights = hard drive means the AI won't know last week's news. Role first = BIOS first means identity set the foundation for everything. The architecture thinking change how you use AI forever.
+  </div>
+  <p style="text-align:center;margin-top:30px;color:var(--td);font-size:13px">
+    The AI Architecture — Analogous to Computer Architecture<br>
+    <span style="color:var(--a1);font-weight:600">Spring 2026</span>
+  </p>
+</section>
+
+<!-- ============================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================ -->
+<script>
+// ── NAV & PROGRESS ──
+const sls=document.querySelectorAll('.sl'),dotsC=document.getElementById('dots');
+sls.forEach((_,i)=>{const d=document.createElement('div');d.className='dot-n'+(i===0?' on':'');d.onclick=()=>go(i);dotsC.appendChild(d)});
+function go(i){sls[i].scrollIntoView({behavior:'smooth'})}
+const obs1=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=[...sls].indexOf(e.target);document.querySelectorAll('.dot-n').forEach((d,j)=>d.classList.toggle('on',j===i))}})},{threshold:.35});
+sls.forEach(s=>obs1.observe(s));
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'});
+
+// ── MORPH-IN ON SCROLL ──
+const obs2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')})},{threshold:.12});
+document.querySelectorAll('.morph-in').forEach(el=>obs2.observe(el));
+
+// ── S1: LAYER EXPAND ──
+function toggleLayer(el){const was=el.classList.contains('expanded');document.querySelectorAll('.m-layer').forEach(l=>l.classList.remove('expanded'));if(!was)el.classList.add('expanded')}
+
+// ── S2: INSTRUCTION CYCLE ──
+const cpuCycle=[
+  {icon:'📥',label:'Fetch',sub:'Get instruction from memory',caption:'CPU reads the next instruction from RAM at the address in the Program Counter.'},
+  {icon:'🔍',label:'Decode',sub:'Figure out what it means',caption:'The control unit breaks the instruction into opcode (what to do) and operands (data to use).'},
+  {icon:'⚙️',label:'Execute',sub:'Do the math / logic',caption:'The ALU performs the operation — arithmetic, comparison, or logic.'},
+  {icon:'💾',label:'Store',sub:'Save the result',caption:'Result is written back to a register or memory location.'}
+];
+const llmCycle=[
+  {icon:'✂️',label:'Tokenize',sub:'Break text into tokens',caption:'Your prompt is split into token IDs — just like CPU fetching binary instructions from memory.'},
+  {icon:'🎯',label:'Attend',sub:'Weigh importance',caption:'Attention mechanism scores which tokens matter most — like CPU decoding which operands to use.'},
+  {icon:'🧠',label:'Infer',sub:'Calculate next token',caption:'Matrix math picks the most probable next token — like the ALU doing arithmetic to produce a result.'},
+  {icon:'📝',label:'Generate',sub:'Output readable text',caption:'Token IDs convert back to words shown to you — like writing results to the display output.'}
+];
+let cycleView='cpu',cycleTimer,cycleIdx=-1;
+const ring=document.getElementById('cycleRing'),cap=document.getElementById('cycleCaption');
+
+function buildCycle(data){
+  ring.innerHTML='';
+  const cx=160,cy=140,r=110;
+  const positions=[[-1,-1],[1,-1],[1,1],[-1,1]];
+  data.forEach((d,i)=>{
+    const angle=(i/4)*Math.PI*2 - Math.PI/2;
+    const x=cx+r*Math.cos(angle)-50, y=cy+r*Math.sin(angle)-50;
+    const n=document.createElement('div');
+    n.className='cycle-node';n.dataset.i=i;
+    n.style.left=x+'px';n.style.top=y+'px';
+    n.innerHTML=`<div class="cn-icon">${d.icon}</div>${d.label}<div class="cn-sub">${d.sub}</div>`;
+    n.onclick=()=>{highlightNode(i,data)};
+    ring.appendChild(n);
+    // arrow
+    if(i<4){
+      const aAngle=angle+Math.PI/8;
+      const ax=cx+r*0.7*Math.cos(aAngle)-10,ay=cy+r*0.7*Math.sin(aAngle)-10;
+      const arrow=document.createElement('div');
+      arrow.className='cycle-arrow';arrow.dataset.i=i;
+      arrow.style.left=ax+'px';arrow.style.top=ay+'px';arrow.style.position='absolute';
+      arrow.textContent='→';
+      arrow.style.transform=`rotate(${(aAngle+Math.PI/4)*180/Math.PI}deg)`;
+      ring.appendChild(arrow);
+    }
+  });
+  cap.textContent='Click a node or press Play.';
+}
+buildCycle(cpuCycle);
+
+function highlightNode(i,data){
+  ring.querySelectorAll('.cycle-node').forEach((n,j)=>n.classList.toggle('active',j===i));
+  ring.querySelectorAll('.cycle-arrow').forEach((a,j)=>a.classList.toggle('active',j===i||j===(i+3)%4));
+  cap.textContent=data[i].caption;
+}
+
+function playCycle(){
+  const data=cycleView==='cpu'?cpuCycle:llmCycle;
+  cycleIdx=-1;clearInterval(cycleTimer);
+  cycleTimer=setInterval(()=>{cycleIdx=(cycleIdx+1)%4;highlightNode(cycleIdx,data);if(cycleIdx===3)clearInterval(cycleTimer)},1200);
+}
+
+function resetCycle(){clearInterval(cycleTimer);ring.querySelectorAll('.cycle-node').forEach(n=>n.classList.remove('active'));ring.querySelectorAll('.cycle-arrow').forEach(a=>a.classList.remove('active'));cap.textContent='Click a node or press Play.'}
+
+function toggleCycleView(){
+  cycleView=cycleView==='cpu'?'llm':'cpu';
+  document.getElementById('toggleViewBtn').textContent=cycleView==='cpu'?'Switch to LLM View':'Switch to CPU View';
+  // Morph animation
+  const nodes=ring.querySelectorAll('.cycle-node');
+  nodes.forEach(n=>{n.style.transform='scale(0)';n.style.opacity='0'});
+  setTimeout(()=>{
+    buildCycle(cycleView==='cpu'?cpuCycle:llmCycle);
+    requestAnimationFrame(()=>{
+      ring.querySelectorAll('.cycle-node').forEach((n,i)=>{
+        n.style.transform='scale(0)';n.style.opacity='0';
+        setTimeout(()=>{n.style.transform='scale(1)';n.style.opacity='1'},i*150);
+      });
+    });
+  },400);
+}
+
+// ── S3: TRAIN WINDOW ──
+const trainMsgs=[
+  ['Hello','how','are','you','today','?'],
+  ['Tell','me','about','quantum','physics','please'],
+  ['What','is','the','speed','of','light','?'],
+  ['Can','you','write','a','poem','about','stars'],
+  ['Explain','machine','learning','in','simple','terms'],
+  ['What','are','neural','networks','used','for','?'],
+];
+const trainColors=['#2d6a4f','#1b4965','#5a189a','#6a040f','#3a0ca3','#7b2d8e','#b5179e','#4361ee'];
+let trainTokens=0,trainMsgIdx=0,trainOffset=0;
+const track=document.getElementById('sceneryTrack');
+const maxVisible=9; // tokens visible in window
+
+// stars
+const starsEl=document.getElementById('stars');
+for(let i=0;i<30;i++){const s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*2+'s';starsEl.appendChild(s)}
+
+function sendTrainMessage(){
+  const msg=trainMsgs[trainMsgIdx%trainMsgs.length];
+  const color=trainColors[trainMsgIdx%trainColors.length];
+  msg.forEach((word,i)=>{
+    setTimeout(()=>{
+      const tok=document.createElement('div');
+      tok.className='s-token';
+      tok.textContent=word;
+      tok.style.background=color;
+      tok.style.color='#fff';
+      tok.style.opacity='0';tok.style.transform='scale(0.5)';
+      track.appendChild(tok);
+      requestAnimationFrame(()=>{tok.style.transition='all .4s cubic-bezier(.34,1.56,.64,1)';tok.style.opacity='1';tok.style.transform='scale(1)'});
+      trainTokens++;
+      document.getElementById('trainCounter').textContent=trainTokens+' tokens sent';
+      // scroll
+      const allToks=track.children.length;
+      if(allToks>maxVisible){
+        trainOffset+=64;
+        track.style.transition='transform .5s ease';
+        track.style.transform=`translateX(-${trainOffset}px)`;
+        // fade old
+        if(allToks>maxVisible+3){
+          track.children[allToks-maxVisible-4].style.opacity='0.15';
+        }
+      }
+      updateTrainStatus();
+    },i*200);
+  });
+  trainMsgIdx++;
+}
+
+function updateTrainStatus(){
+  const el=document.getElementById('trainStatus');
+  if(trainTokens>40){el.textContent='⚠️ Context filling up! Oldest tokens fading from view...';el.style.color='var(--a3)'}
+  else if(trainTokens>20){el.textContent='🟡 Window getting crowded — earlier scenery scrolling away';el.style.color='var(--a4)'}
+  else{el.textContent='🟢 Plenty of room. The train just started its journey.';el.style.color='var(--a2)'}
+}
+
+function resetTrain(){
+  track.innerHTML='';track.style.transform='translateX(0)';
+  trainTokens=0;trainMsgIdx=0;trainOffset=0;
+  document.getElementById('trainCounter').textContent='0 tokens sent';
+  document.getElementById('trainStatus').textContent='🆕 Fresh conversation — empty tracks ahead.';
+  document.getElementById('trainStatus').style.color='var(--a2)';
+}
+
+// ── S4: KV CACHE ──
+const KV_SIZE=48;let kvTurn=0,kvFilled=0;
+const kvG=document.getElementById('kvGrid');
+function kvInit(){kvG.innerHTML='';for(let i=0;i<KV_SIZE;i++){const c=document.createElement('div');c.className='kv-cell';c.innerHTML='<div class="kv-inner"></div>';kvG.appendChild(c)}kvFilled=0;kvTurn=0}
+kvInit();
+
+function kvSendMessage(){
+  kvTurn++;
+  const newTokens=5+Math.floor(Math.random()*4);
+  const cells=kvG.querySelectorAll('.kv-cell');
+  // Mark old filled as cached (green)
+  cells.forEach(c=>{if(c.classList.contains('filled')){c.querySelector('.kv-inner').style.background='#2d6a4f';c.classList.add('cached')}});
+  // Add new tokens (purple = new computation)
+  for(let i=0;i<newTokens&&kvFilled<KV_SIZE;i++){
+    const c=cells[kvFilled];
+    setTimeout(()=>{
+      c.classList.add('filled');
+      c.querySelector('.kv-inner').style.background='var(--a1)';
+    },i*100);
+    kvFilled++;
+  }
+  const cached=kvFilled-newTokens;
+  document.getElementById('kvStats').textContent=`Turn ${kvTurn} — ${Math.max(0,cached)} cached (reused) + ${Math.min(newTokens,KV_SIZE)} new computations`;
+  if(kvFilled>=KV_SIZE){
+    document.getElementById('kvStats').textContent+=` — KV Cache full!`;
+  }
+}
+
+function kvReset(){kvInit();document.getElementById('kvStats').textContent='Turn 0 — Send a message to begin'}
+
+// ── S5: PROMPT BUILDER ──
+const slotTexts=[
+  '"Act as a senior veterinarian with 20 years experience"',
+  '"Writing a blog for first-time puppy owners, no medical background"',
+  '"Write a 500-word article"',
+  '"Top 5 essential vaccinations for puppies in first 12 months"',
+  '"Warm friendly tone, include a table, end with one-sentence takeaway"'
+];
+const infAnswers=[
+  'Senior veterinarian, 20yr expert → CONFIDENT',
+  'Non-technical first-time puppy owners → CONFIDENT',
+  'Write a structured article, 500 words → CONFIDENT',
+  '5 items, puppies, 12-month scope → CONFIDENT',
+  'Article + table + summary, friendly tone → CONFIDENT'
+];
+let slotsFilled=[false,false,false,false,false];
+
+function fillSlot(idx){
+  if(slotsFilled[idx])return;
+  slotsFilled[idx]=true;
+  const slot=document.querySelectorAll('.pb-slot')[idx];
+  slot.classList.add('filled');
+  document.getElementById('pb'+idx).innerHTML='<strong>'+slotTexts[idx]+'</strong>';
+  slot.style.transform='scale(1.02)';
+  setTimeout(()=>{slot.style.transform='scale(1)'},400);
+  // update inference card
+  const inf=document.getElementById('inf'+idx);
+  inf.classList.add('on');
+  inf.querySelector('.inf-a').textContent=infAnswers[idx];
+  // update meter
+  const count=slotsFilled.filter(Boolean).length;
+  const pct=count/5*100;
+  const fill=document.getElementById('pbFill');
+  fill.style.width=pct+'%';
+  fill.style.background=pct<40?'var(--a3)':pct<80?'var(--a4)':'var(--a5)';
+  // Check if all filled → unlock send buttons
+  if(count===5){
+    document.getElementById('sendToLLM').classList.add('unlocked');
+    updateAssembledPrompt();
+  }
+}
+
+// ── BUILD THE ASSEMBLED PROMPT ──
+const promptParts=[
+  'Act as a senior veterinarian with 20 years experience.',
+  'You are writing a blog for first-time puppy owners who have no medical background.',
+  'Write a 500-word article',
+  'covering the top 5 essential vaccinations for puppies in their first 12 months.',
+  'Use a warm, friendly tone. Include a table with vaccine names and recommended ages. End with a one-sentence takeaway.'
+];
+
+function getAssembledPrompt(){
+  return promptParts.join('\n\n');
+}
+
+function updateAssembledPrompt(){
+  document.getElementById('assembledPrompt').textContent=getAssembledPrompt();
+}
+
+// ── COPY TO CLIPBOARD (works on file:// and http://) ──
+// navigator.clipboard FAILS on file:// and non-HTTPS origins.
+// Fallback: create a hidden textarea, select it, execCommand('copy').
+function copyToClipboard(text){
+  // Try modern API first
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  // Fallback for file:// and http:// origins
+  return new Promise((resolve, reject)=>{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok ? resolve() : reject();
+    } catch(e){
+      document.body.removeChild(ta);
+      reject(e);
+    }
+  });
+}
+
+// ── UNIVERSAL SEND FUNCTION ──
+// Claude supports ?q= query parameter (prompt auto-fills).
+// ChatGPT and Gemini do NOT support ?q=, so we copy to clipboard and tell user to paste.
+
+function universalSend(platform, prompt, statusEl, btnEl){
+  if(!prompt||!prompt.trim()){
+    statusEl.textContent='⚠️ Nothing to send — type your prompt first!';
+    statusEl.style.color='var(--a3)';
+    return;
+  }
+
+  const isMac = navigator.userAgent.indexOf('Mac') !== -1;
+  const pasteKey = isMac ? '⌘V' : 'Ctrl+V';
+
+  const names  = { chatgpt:'ChatGPT', claude:'Claude', gemini:'Gemini' };
+  const colors = { chatgpt:'#10a37f', claude:'#d97706', gemini:'#4285f4' };
+  const name  = names[platform];
+  const color = colors[platform];
+
+  // Claude & ChatGPT: use ?q= query parameter (auto-fills the prompt)
+  // Gemini: does NOT support ?q=, so clipboard + open + tell user to paste
+  if(platform==='claude'){
+    var url='https://claude.ai/new?q='+encodeURIComponent(prompt);
+    copyToClipboard(prompt);
+    window.open(url,'_blank');
+    statusEl.innerHTML='✅ <strong>'+name+'</strong> opened with your prompt pre-filled! Also copied to clipboard as backup.';
+    statusEl.style.color=color;
+  } else if(platform==='chatgpt'){
+    var url='https://chatgpt.com/?q='+encodeURIComponent(prompt);
+    copyToClipboard(prompt);
+    window.open(url,'_blank');
+    statusEl.innerHTML='✅ <strong>'+name+'</strong> opened with your prompt pre-filled! Also copied to clipboard as backup.';
+    statusEl.style.color=color;
+  } else if(platform==='gemini'){
+    // Gemini does NOT support ?q= — use clipboard approach
+    navigator.clipboard.writeText(prompt).then(function(){
+      // Update button text to show copied feedback
+      if(btnEl){
+        var originalHTML=btnEl.innerHTML;
+        btnEl.innerHTML='✅ Copied! Now Paste ('+pasteKey+')';
+        btnEl.style.background='var(--a5)';btnEl.style.color='#000';
+        setTimeout(function(){btnEl.innerHTML=originalHTML;btnEl.style.background='';btnEl.style.color='';},3000);
+      }
+      // Open Gemini
+      window.open('https://gemini.google.com/app','_blank');
+      statusEl.innerHTML='✅ Prompt copied! <strong>Gemini</strong> opened — press <kbd style="background:var(--s3);padding:2px 6px;border-radius:4px">'+pasteKey+'</kbd> to paste your prompt.';
+      statusEl.style.color=color;
+    }).catch(function(){
+      // Fallback if clipboard API fails
+      var t=document.createElement('textarea');t.value=prompt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
+      window.open('https://gemini.google.com/app','_blank');
+      statusEl.innerHTML='✅ Prompt copied! <strong>Gemini</strong> opened — press <kbd style="background:var(--s3);padding:2px 6px;border-radius:4px">'+pasteKey+'</kbd> to paste.';
+      statusEl.style.color=color;
+    });
+    return; // skip the button pulse below since Gemini handles its own button feedback
+  }
+
+  // Button pulse
+  if(btnEl){btnEl.style.transform='scale(0.93)';setTimeout(()=>{btnEl.style.transform=''},250)}
+}
+
+// S5 demo buttons (pre-built prompt)
+function sendToLLM(platform){
+  const btn=event.target.closest('.llm-btn');
+  universalSend(platform, getAssembledPrompt(), document.getElementById('sendStatus'), btn);
+}
+
+function copyPrompt(){
+  const prompt=getAssembledPrompt();
+  if(!prompt){return}
+  copyToClipboard(prompt).then(()=>{
+    const btn=document.getElementById('copyPromptBtn');
+    btn.innerHTML='✅ Copied!';btn.style.borderColor='var(--a5)';btn.style.color='var(--a5)';
+    document.getElementById('sendStatus').textContent='Prompt copied to clipboard! Paste it into any LLM.';
+    document.getElementById('sendStatus').style.color='var(--a5)';
+    setTimeout(()=>{btn.innerHTML='📋 Copy Prompt';btn.style.borderColor='var(--a2)';btn.style.color='var(--a2)'},2500);
+  });
+}
+
+function resetPromptBuilder(){
+  slotsFilled=[false,false,false,false,false];
+  document.querySelectorAll('.pb-slot').forEach(s=>s.classList.remove('filled'));
+  slotTexts.forEach((_,i)=>{
+    document.getElementById('pb'+i).innerHTML=['Click to set: "Act as a senior veterinarian with 20 years experience"','Click to set: "Writing a blog for first-time puppy owners with no medical background"','Click to set: "Write a 500-word article"','Click to set: "Top 5 essential vaccinations for puppies in their first 12 months"','Click to set: "Warm friendly tone, include a table, end with one-sentence takeaway"'][i];
+  });
+  document.querySelectorAll('.inf-card').forEach((c,i)=>{
+    c.classList.remove('on');
+    c.querySelector('.inf-a').textContent=['Guessing... generic assistant','Guessing... someone, maybe adult?','Guessing... information about something','Guessing... medium length maybe?','Guessing... paragraphs probably'][i];
+  });
+  document.getElementById('pbFill').style.width='0%';
+  // Re-lock send section
+  document.getElementById('sendToLLM').classList.remove('unlocked');
+  document.getElementById('assembledPrompt').textContent='Fill all 5 slots to see your assembled prompt here...';
+  document.getElementById('sendStatus').textContent='';
+}
+
+// ── S5b: PRACTICE LAB TEXTAREAS ──
+const taLabels=['ROLE','CONTEXT','INTENT','SPECIFICATION','FORMAT'];
+
+function onTaInput(){
+  let filledCount=0;
+  const parts=[];
+  for(let i=0;i<5;i++){
+    const el=document.getElementById('ta'+i);
+    const val=el.value.trim();
+    if(val.length>0){
+      filledCount++;
+      el.classList.add('has-text');
+      parts.push('['+ taLabels[i] +']\n'+val);
+    }else{
+      el.classList.remove('has-text');
+    }
+  }
+  // Update score
+  document.getElementById('taScore').textContent=filledCount+' / 5 fields';
+  // Update meter
+  const pct=filledCount/5*100;
+  const fill=document.getElementById('taFill');
+  fill.style.width=pct+'%';
+  fill.style.background=pct<40?'var(--a3)':pct<80?'var(--a4)':'var(--a5)';
+  // Update preview
+  const preview=document.getElementById('taPreview');
+  if(parts.length>0){
+    preview.textContent=parts.join('\n\n');
+    preview.style.color='var(--tx)';
+    preview.style.borderColor='var(--a2)';
+  }else{
+    preview.textContent='Your prompt will appear here as you type...';
+    preview.style.color='var(--td)';
+    preview.style.borderColor='var(--bd)';
+  }
+  // Token estimate (~0.75 tokens per word, rough)
+  const allText=parts.join(' ');
+  const wordCount=allText.split(/\s+/).filter(Boolean).length;
+  const tokenEst=Math.round(wordCount*1.3);
+  document.getElementById('taTokenEst').textContent='~'+tokenEst+' tokens';
+  // Unlock send buttons when at least 3 fields filled
+  const sendPanel=document.getElementById('sendToLLM2');
+  if(filledCount>=3){sendPanel.classList.add('unlocked')}
+  else{sendPanel.classList.remove('unlocked')}
+}
+
+function getCustomPrompt(){
+  const parts=[];
+  for(let i=0;i<5;i++){
+    const val=document.getElementById('ta'+i).value.trim();
+    if(val)parts.push(val);
+  }
+  return parts.join('\n\n');
+}
+
+// S5b Practice Lab buttons (student's own prompt)
+function sendCustom(platform){
+  const btn=event.target.closest('.llm-btn');
+  universalSend(platform, getCustomPrompt(), document.getElementById('sendStatus2'), btn);
+}
+
+function copyCustom(){
+  const prompt=getCustomPrompt();
+  if(!prompt){document.getElementById('sendStatus2').textContent='⚠️ Type something first!';document.getElementById('sendStatus2').style.color='var(--a3)';return}
+  copyToClipboard(prompt).then(()=>{
+    const btn=document.getElementById('copyCustomBtn');
+    btn.innerHTML='✅ Copied!';btn.style.borderColor='var(--a5)';btn.style.color='var(--a5)';
+    document.getElementById('sendStatus2').textContent='Prompt copied to clipboard! Paste it into any LLM.';
+    document.getElementById('sendStatus2').style.color='var(--a5)';
+    setTimeout(()=>{btn.innerHTML='📋 Copy';btn.style.borderColor='var(--a2)';btn.style.color='var(--a2)'},2500);
+  });
+}
+
+// ── S6: INFLUENCE CHART ──
+function drawInfluence(){
+  const canvas=document.getElementById('influenceChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  // gradient fill
+  const grad=ctx.createLinearGradient(60,0,W-20,0);
+  grad.addColorStop(0,'rgba(0,206,201,0.6)');
+  grad.addColorStop(0.3,'rgba(108,92,231,0.4)');
+  grad.addColorStop(1,'rgba(253,121,168,0.05)');
+  ctx.beginPath();
+  ctx.moveTo(60,H-40);
+  for(let x=0;x<=1;x+=0.005){
+    const px=60+x*(W-80);
+    const influence=Math.pow(1-x,1.5);
+    const py=(H-50)-(influence*(H-90))+30;
+    ctx.lineTo(px,py);
+  }
+  ctx.lineTo(W-20,H-40);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  // line
+  ctx.beginPath();ctx.strokeStyle='var(--a2)';ctx.lineWidth=2.5;
+  for(let x=0;x<=1;x+=0.005){
+    const px=60+x*(W-80);
+    const influence=Math.pow(1-x,1.5);
+    const py=(H-50)-(influence*(H-90))+30;
+    x===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+  // labels
+  ctx.fillStyle='#8892b0';ctx.font='12px Inter';
+  ctx.fillText('Position 1 (ROLE)',60,H-12);
+  ctx.fillText('→ Token Position',W/2-40,H-12);
+  ctx.fillText('Position N',W-100,H-12);
+  ctx.save();ctx.translate(16,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('Influence on Output →',0,0);ctx.restore();
+  // markers
+  const labels=[{x:0,t:'ROLE',c:'#fd79a8'},{x:0.1,t:'CONTEXT',c:'#fdcb6e'},{x:0.2,t:'INTENT',c:'#00cec9'},{x:0.35,t:'SPEC',c:'#55efc4'},{x:0.5,t:'FORMAT',c:'#6c5ce7'}];
+  labels.forEach(l=>{
+    const px=60+l.x*(W-80);
+    const influence=Math.pow(1-l.x,1.5);
+    const py=(H-50)-(influence*(H-90))+30;
+    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle=l.c;ctx.fill();
+    ctx.fillStyle=l.c;ctx.font='bold 11px Inter';ctx.fillText(l.t,px-15,py-12);
+  });
+}
+setTimeout(drawInfluence,500);
+window.addEventListener('resize',drawInfluence);
+
+// ── S7: SUMMARY GRID ──
+const summaryPairs=[
+  ['CPU processes instructions','Transformer processes tokens'],
+  ['RAM holds working data','Context window holds conversation'],
+  ['L1/L2/L3 Cache speeds access','KV Cache skips recalculation'],
+  ['Hard Drive stores files','Weights store learned knowledge'],
+  ['I/O devices for interaction','Text interface for everything'],
+  ['Fetch-Decode-Execute-Store','Tokenize-Attend-Infer-Generate'],
+  ['BIOS loads identity first','ROLE loads identity first'],
+  ['Opcodes + Operands','R.C.I.S.F prompt framework']
+];
+const sg=document.getElementById('summaryGrid');
+// headers
+sg.innerHTML='<div style="padding:10px;background:var(--a3);color:#fff;font-weight:700;border-radius:10px 0 0 0;font-size:13px">🖥️ Computer</div><div style="padding:10px;background:var(--a1);font-weight:700;text-align:center;font-size:16px">=</div><div style="padding:10px;background:var(--a2);color:#fff;font-weight:700;border-radius:0 10px 0 0;font-size:13px">🤖 LLM</div>';
+summaryPairs.forEach((p,i)=>{
+  const bg=i%2===0?'var(--s2)':'var(--s1)';
+  const last=i===summaryPairs.length-1;
+  sg.innerHTML+=`<div style="padding:10px 14px;background:${bg};font-size:13px;${last?'border-radius:0 0 0 10px':''}">${p[0]}</div><div style="padding:10px;background:${bg};text-align:center;color:var(--a1);font-weight:700">≈</div><div style="padding:10px 14px;background:${bg};font-size:13px;${last?'border-radius:0 0 10px 0':''}">${p[1]}</div>`;
+});
+</script>
+</body>
+</html>
