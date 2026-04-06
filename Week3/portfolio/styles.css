@@ -1,47 +1,46 @@
-
 * {
---space: 8px;
---text-color: #14213d;
---bg-color: #edede9;
---parchment: #edede9ff;
---dust-grey: #d6ccc2ff;
---linen: #f5ebe0ff;
---powder-petal: #e3d5caff;
---almond-silk: #d5bdafff;
+    --space: 8px;
+    --text-color: #14213d;
+    --bg-color: #edede9;
+    --parchment: #edede9ff;
+    --dust-grey: #d6ccc2ff;
+    --linen: #f5ebe0ff;
+    --powder-petal: #e3d5caff;
+    --almond-silk: #d5bdafff;
+    box-sizing: border-box;
 }
 
 body {
-background-image: url('./assets/wavy-css-pattern-by-magicpattern.png');
-font-family: "Public Sans", sans-serif;
-font-optical-sizing: auto;
-font-style: normal;
-color: var(--text-color);
-padding-left: 20px;
-padding-right: 20px;
-padding-top: 0px;
-padding-bottom: 0px;
+    background-image: url('./assets/wavy-css-pattern-by-magicpattern.png');
+    font-family: "Public Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    color: var(--text-color);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
-font-family: "Urbanist", sans-serif;
-font-optical-sizing: auto;
-font-weight: 600;
-color: var(--text-color);
+    font-family: "Urbanist", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    color: var(--text-color);
 }
 
-
-
 h1 {
-    margin-bottom: var(--space); 
+    margin-bottom: var(--space);
     text-shadow: 4px 4px var(--parchment);
     background-color: var(--almond-silk);
-
 }
 
 header h1,
 .atAGlance h1,
 .education h1,
-footer h1 {
+footer h1,
+.engineeringCards h1 {
     padding-left: var(--space);
 }
 
@@ -52,10 +51,12 @@ footer h1 {
     margin: 0;
     display: inline-block;
 }
-header {
-    background-color: var(--almond-silk); font-size: 38px; text-align: left;
-}
 
+header {
+    background-color: var(--almond-silk);
+    font-size: 38px;
+    text-align: left;
+}
 
 .education ul {
     list-style: none;
@@ -71,18 +72,14 @@ header {
 .education li::before {
     content: "";
     position: absolute;
-
-    left: -8px; /* move further left */
+    left: -8px;
     top: 0.3em;
-
-    width: 32px;   /* bigger */
+    width: 32px;
     height: 32px;
-
     background-image: url('./assets/arrows.svg');
     background-size: contain;
     background-repeat: no-repeat;
-
-    opacity: 0.9; /* slightly stronger */
+    opacity: 0.9;
 }
 
 .education li br + * {
@@ -94,11 +91,9 @@ header {
     display: inline-flex;
     align-items: center;
     gap: calc(var(--space) / 2);
-
     background-color: var(--parchment);
     padding: calc(var(--space) / 4) calc(var(--space) / 2);
     border-radius: 4px;
-
     font-size: calc(var(--space) * 3);
     margin-bottom: calc(var(--space) / 2);
     font-weight: 700;
@@ -109,9 +104,9 @@ header {
 }
 
 .cards button h3 {
-    font-size: calc(var(--space) * 3); 
+    font-size: calc(var(--space) * 3);
     display: flex;
-    align-items: center; /* vertical alignment */
+    align-items: center;
     gap: calc(var(--space) / 2);
 }
 
@@ -119,7 +114,6 @@ header {
     font-size: calc(var(--space) * 2);
 }
 
-/* Base button style */
 .cards button {
     background-color: var(--linen);
     border: 2px solid var(--dust-grey);
@@ -127,27 +121,87 @@ header {
     padding: calc(var(--space) * 2);
 }
 
-/* Hover state */
 .cards button:hover {
     background-color: var(--powder-petal);
     border-color: var(--almond-silk);
 }
 
-/* Optional: active (click) feedback */
 .cards button:active {
     transform: translateY(0);
 }
 
 .material-symbols-outlined {
-font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-font-size: 32px;
-line-height: 1;
-display: inline-block;
-display: inline-flex;
-align-items: center;
-margin-bottom: 4px;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    font-size: 32px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.engineeringCards {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 500px);
+    gap: 24px;
+    justify-content: center;
+    align-items: start;
+}
+
+.card {
+    width: 500px;
+    height: 750px;
+    background-color: var(--linen);
+    padding: 36px;
+    border-radius: 12px;
+    box-shadow: 5px 10px #888888;
+    box-sizing: border-box;
+}
+
+.card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.card h1 {
+    font-size: 32px;
+    text-shadow: none;
+    background-color: transparent;
+    margin-bottom: 12px;
+    padding-left: 0;
+}
+
+.card p {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.card button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--almond-silk);
+    color: var(--text-color);
+    font-family: "Urbanist", sans-serif;
+    font-weight: 700;
+}
+
+.card button:hover {
+    background-color: var(--powder-petal);
+}
+
+footer {
+    margin-top: 40px;
 }
