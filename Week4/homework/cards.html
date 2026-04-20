@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JASON BRONOWITZ // PORTFOLIO</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+    </style>
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <nav class="stickyNav" aria-label="Primary">
+        <div class="navButtons">
+            <button type="button" onclick="document.getElementById('glance').scrollIntoView({behavior:'smooth'})">At a glance</button>
+            <button type="button" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})">Work</button>
+            <button type="button" onclick="document.getElementById('education').scrollIntoView({behavior:'smooth'})">Education</button>
+            <button type="button" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact</button>
+        </div>
+    </nav>
+
+    <header class="siteHeader">
+        <h1>JASON BRONOWITZ</h1>
+    </header>
+
+    <main>
+        <div class="title">
+            <h3>ai engineering. data. digital humanities.</h3>
+        </div>
+
+        <section id="glance" class="atAGlance">
+            <h1>at a glance</h1>
+
+            <div class="cards">
+                <button id="courses" type="button">
+                    <h3>
+                        <span class="material-symbols-outlined">view_kanban</span>
+                        courses
+                    </h3>
+                    <p>courses I teach</p>
+                </button>
+
+                <button id="projects" type="button">
+                    <h3>
+                        <span class="material-symbols-outlined">heart_plus</span>
+                        projects
+                    </h3>
+                    <p>projects I've created</p>
+                </button>
+
+                <button id="programs" type="button">
+                    <h3>
+                        <span class="material-symbols-outlined">saved_search</span>
+                        programs
+                    </h3>
+                    <p>degrees I'm part of</p>
+                </button>
+            </div>
+        </section>
+
+        <section id="work" class="engineeringCards">
+            <h1>engineering unleashed cards</h1>
+
+            <div class="cardGrid">
+                <div class="card">
+                    <img src="./assets/brewing.png" alt="Brewing Success with AI">
+                    <div class="cardBody">
+                        <h1>Brewing Success with AI</h1>
+                        <p>Teaching prompt engineering for data analysis through hands-on, AI-driven learning experiences.</p>
+                        <button type="button" onclick="window.open('https://engineeringunleashed.com/card/4842', '_blank', 'noopener,noreferrer')">
+                            View Card
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="./assets/strategicdoing.png" alt="Strategic Doing Book Club">
+                    <div class="cardBody">
+                        <h1>Strategic Doing Book Club</h1>
+                        <p>Catalyzing collaborative action and innovation at The Polytechnic School through structured engagement.</p>
+                        <button type="button" onclick="window.open('https://engineeringunleashed.com/card/4817', '_blank', 'noopener,noreferrer')">
+                            View Card
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="./assets/weaving.png" alt="Woven Legacies">
+                    <div class="cardBody">
+                        <h1>Woven Legacies</h1>
+                        <p>Exploring core memory, data, and equity in computing through interdisciplinary storytelling.</p>
+                        <button type="button" onclick="window.open('https://engineeringunleashed.com/card/5948', '_blank', 'noopener,noreferrer')">
+                            View Card
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="./assets/curiosity.png" alt="Cultivating Curiosity">
+                    <div class="cardBody">
+                        <h1>Cultivating Curiosity</h1>
+                        <p>Inspire curiosity among your students in this lesson, asking students to evaluate how they ask questions and encounter new scenarios.</p>
+                        <button type="button" onclick="window.open('https://docs.google.com/presentation/d/1RCu0Ndq6VeBFWRW7r_rht3_PrZMEb7ofFQQLJOROgx4/edit?usp=sharing', '_blank', 'noopener,noreferrer')">
+                            View Card
+                        </button>
+                    </div>
+                </div>                </div>
+            </div>
+        </section>
+
+        <section id="education" class="education">
+            <h1>education</h1>
+
+            <ul>
+                <li>
+                    <span class="school">GWYNEDD MERCY UNIVERSITY</span><br>
+                    Ed.D. Candidate, Teaching & Learning in Higher Education (expected 2026)
+                </li>
+
+                <li>
+                    <span class="school">ARIZONA STATE UNIVERSITY</span><br>
+                    Ph.D. Student, Comparative Culture & Language (expected 2027)<br>
+                    M.S., Computational Life Sciences, 2025<br>
+                    Graduate Certificate, Digital Humanities, 2025<br>
+                    Graduate Certificate, Biological Data Science, 2024<br>
+                    Graduate Certificate, Computational Life Sciences, 2024<br>
+                    B.S., Applied Quantitative Science, 2024<br>
+                    B.A., Jewish Studies, 2018<br>
+                    Certificate, Modern Hebrew, 2018
+                </li>
+
+                <li>
+                    <span class="school">HEBREW UNION COLLEGE</span><br>
+                    M.A., Hebrew Letters, 2018<br>
+                    Graduate Certificate, Education (Adolescence and Emerging Adulthood), 2012
+                </li>
+
+                <li>
+                    <span class="school">BINGHAMTON UNIVERSITY</span><br>
+                    M.A.S.S., Economic Development, 2007<br>
+                    B.A., Economics, 2006
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <h1>contact me</h1>
+        <h3>jason.bronowitz@asu.edu</h3>
+    </footer>
+</body>
+</html>
